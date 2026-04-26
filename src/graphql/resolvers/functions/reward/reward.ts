@@ -1,19 +1,17 @@
 import { gqlarr, type AppContext } from '../../../../model/graphql';
 import type { QueryRewardResolver } from '../../../../model/graphql';
 import { createSelectStatement } from '../../sql/reward';
+import { type Database } from '../../../../db';
 
-export const reward: QueryRewardResolver<AppContext> = (
-  _parent,
-  _args,
-  { timezone },
-  info,
-) => {
-  const {
-    fields,
-    arguments: { id },
-  } = gqlarr.getQueryField(info, 'reward')!;
+export const reward = (db: Database): QueryRewardResolver<AppContext> => {
+  return (_parent, _args, { timezone }, info) => {
+    const {
+      fields,
+      arguments: { id },
+    } = gqlarr.getQueryField(info, 'reward')!;
 
-  return createSelectStatement(fields, timezone)
-    .where('id', '=', id)
-    .executeTakeFirst();
+    return createSelectStatement(db, fields, timezone)
+      .where('id', '=', id)
+      .executeTakeFirst();
+  };
 };

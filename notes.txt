@@ -1,0 +1,2 @@
+- Optimize query performance (ideal is < 50ms, < 100ms for medium complexity, < 200ms for max allowed complexity)
+- Fix issue with redemption forums (not returning as array)

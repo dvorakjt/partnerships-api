@@ -1,19 +1,15 @@
-import 'dotenv/config';
 import { Kysely, PostgresDialect } from 'kysely';
-import { Pool } from 'pg';
+import type { Pool } from 'pg';
 import { DB, pgFn } from '../model/db';
 
-const db = new Kysely<DB>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT!,
-      database: process.env.DB_NAME,
-      max: 10,
-    }),
-  }),
-});
+export type Database = Kysely<DB>;
 
-export { db, pgFn };
+export function createDb(pool: Pool): Database {
+  return new Kysely<DB>({
+    dialect: new PostgresDialect({
+      pool,
+    }),
+  });
+}
+
+export { pgFn };

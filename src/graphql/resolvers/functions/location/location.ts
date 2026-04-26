@@ -2,19 +2,17 @@ import type { AppContext } from '../../../../model/graphql';
 import { sql } from 'kysely';
 import { gqlarr, QueryLocationResolver } from '../../../../model/graphql';
 import { createSelectStatement } from '../../sql/location';
+import { type Database } from '../../../../db';
 
-export const location: QueryLocationResolver<AppContext> = (
-  _parent,
-  _args,
-  { timezone },
-  info,
-) => {
-  const {
-    fields,
-    arguments: { id },
-  } = gqlarr.getQueryField(info, 'location')!;
+export const location = (db: Database): QueryLocationResolver<AppContext> => {
+  return (_parent, _args, { timezone }, info) => {
+    const {
+      fields,
+      arguments: { id },
+    } = gqlarr.getQueryField(info, 'location')!;
 
-  return createSelectStatement(fields, timezone)
-    .where('id', '=', sql<bigint>`CAST(${id} AS BIGINT)`)
-    .executeTakeFirst();
+    return createSelectStatement(db, fields, timezone)
+      .where('id', '=', sql<bigint>`CAST(${id} AS BIGINT)`)
+      .executeTakeFirst();
+  };
 };

@@ -1,6 +1,6 @@
-import { SelectQueryBuilder, sql } from 'kysely';
+import { QueryCreator, SelectQueryBuilder, sql } from 'kysely';
 import { jsonObjectFrom } from 'kysely/helpers/postgres';
-import { db, pgFn } from '../../../../db';
+import { pgFn } from '../../../../db';
 import { DB } from '../../../../model/db';
 import { RewardFields, VoucherOwnership } from '../../../../model/graphql';
 import { ExpressionBuilder } from 'kysely';
@@ -13,10 +13,11 @@ export type DBWithAvailableRewardTable = DB & {
 };
 
 export function createSelectStatement(
+  qb: QueryCreator<DB>,
   fields: RewardFields,
   timezone: string,
 ): SelectQueryBuilder<DBWithAvailableRewardTable, 'available_reward', any> {
-  return db
+  return qb
     .selectFrom(
       pgFn('public.get_available_rewards_in_timezone', [sql.val(timezone)]).as(
         availableRewardTableAlias,
@@ -49,7 +50,7 @@ export function createSelectStatement(
           case 'partner':
             const partnerId = eb.ref('available_reward.partner_id');
             return jsonObjectFrom(
-              createPartnerSelectStatement(field.fields, timezone).where(
+              createPartnerSelectStatement(qb, field.fields, timezone).where(
                 'public.active_partner.id',
                 '=',
                 partnerId,

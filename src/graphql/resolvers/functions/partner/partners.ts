@@ -6,24 +6,22 @@ import {
   createFilterExpression,
   createSelectStatement,
 } from '../../sql/partner';
+import { type Database } from '../../../../db';
 
-export const partners: QueryPartnersResolver<AppContext> = (
-  _parent,
-  _args,
-  { timezone },
-  info,
-) => {
-  const {
-    fields,
-    arguments: { filter, orderBy, take },
-  } = gqlarr.getQueryField(info, 'partners')!;
+export const partners = (db: Database): QueryPartnersResolver<AppContext> => {
+  return (_parent, _args, { timezone }, info) => {
+    const {
+      fields,
+      arguments: { filter, orderBy, take },
+    } = gqlarr.getQueryField(info, 'partners')!;
 
-  return applyOrderByClause(
-    createSelectStatement(fields, timezone).where(eb =>
-      createFilterExpression(eb, filter, timezone),
-    ),
-    orderBy,
-  )
-    .limit(clampedOrDefault(take, { min: 0, max: 50, default: 50 }))
-    .execute();
+    return applyOrderByClause(
+      createSelectStatement(db, fields, timezone).where(eb =>
+        createFilterExpression(eb, filter, timezone),
+      ),
+      orderBy,
+    )
+      .limit(clampedOrDefault(take, { min: 0, max: 50, default: 50 }))
+      .execute();
+  };
 };

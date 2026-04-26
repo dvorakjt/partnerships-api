@@ -1,9 +1,8 @@
-import { sql } from 'kysely';
-import { db } from '../../../../db';
+import { QueryCreator, sql } from 'kysely';
 import { DB, pgFn } from '../../../../model/db';
 
-export function createCountStatement(timezone: string) {
-  return db
+export function createCountStatement(qb: QueryCreator<DB>, timezone: string) {
+  return qb
     .selectFrom(
       pgFn('public.get_available_rewards_in_timezone', [sql.val(timezone)]).as(
         'available_reward',

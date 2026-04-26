@@ -1,13 +1,11 @@
 import { gqlarr, type AppContext } from '../../../../model/graphql';
 import type { QueryLanguagesResolver } from '../../../../model/graphql';
 import { createSelectStatement } from '../../sql/language';
+import { type Database } from '../../../../db';
 
-export const languages: QueryLanguagesResolver<AppContext> = async (
-  _parent,
-  _args,
-  _context,
-  info,
-) => {
-  const { fields } = gqlarr.getQueryField(info, 'languages')!;
-  return createSelectStatement(fields).execute();
+export const languages = (db: Database): QueryLanguagesResolver<AppContext> => {
+  return async (_parent, _args, _context, info) => {
+    const { fields } = gqlarr.getQueryField(info, 'languages')!;
+    return createSelectStatement(db, fields).execute();
+  };
 };

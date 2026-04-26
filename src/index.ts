@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import 'json-bigint-patch';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
@@ -7,12 +8,30 @@ import http from 'http';
 import cors from 'cors';
 import { parse as parseContentType } from 'content-type';
 import { defaultFieldResolver } from 'graphql';
-import { typeDefs } from './graphql';
+import { Pool } from 'pg';
+import { createResolvers, typeDefs } from './graphql';
 import { setCustomTypeParsers, parseTimeZoneHeader } from './util';
 import { AppContext } from './model/graphql';
-import { resolvers } from './graphql';
+import { createDb } from './db';
 
 await setCustomTypeParsers();
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: +process.env.DB_PORT!,
+  database: process.env.DB_NAME,
+  min: 2,
+  max: 10,
+});
+
+const clients = [await pool.connect(), await pool.connect()];
+
+clients.forEach(client => client.release());
+
+const db = createDb(pool);
+const resolvers = createResolvers(db);
 
 const app = express();
 const httpServer = http.createServer(app);
