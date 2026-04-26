@@ -28,7 +28,17 @@ VALUES
 	(8, TRUE),
 	(9, TRUE),
 	(10, TRUE),
-	(11, FALSE);
+	(11, FALSE),
+	(12, TRUE),
+	(13, TRUE),
+	(14, TRUE),
+	(15, TRUE),
+	(16, TRUE),
+	(17, TRUE),
+	(18, TRUE),
+	(19, TRUE),
+	(20, TRUE),
+	(21, TRUE);
 
 INSERT INTO partner_details_translation (
 	partner_id,
@@ -82,6 +92,46 @@ INSERT INTO partner_details_translation (
 
 	(11, 'en', 'Riverstone Department Stores', '/sample-partner-logos/riverstone-department.svg', 'A legacy department store brand currently inactive in this dataset.', 'https://riverstone.example.test', 'Riverstone', NULL),
 	(11, 'es', 'Riverstone Department Stores', '/sample-partner-logos/riverstone-department.svg', 'Marca tradicional de tiendas por departamentos, actualmente inactiva en este conjunto de datos.', 'https://riverstone.example.test/es', 'Riverstone', NULL),
-	(11, 'zh-Hans', 'Riverstone 百货', '/sample-partner-logos/riverstone-department.svg', '传统百货品牌，在此数据集中设置为非激活状态。', 'https://riverstone.example.test/zh-hans', 'Riverstone', NULL);
+	(11, 'zh-Hans', 'Riverstone 百货', '/sample-partner-logos/riverstone-department.svg', '传统百货品牌，在此数据集中设置为非激活状态。', 'https://riverstone.example.test/zh-hans', 'Riverstone', NULL),
+
+	(12, 'en', 'FreshField Markets', '/sample-partner-logos/northstar-marketplace.svg', 'A national grocery network focused on neighborhood stores, produce, and pantry essentials.', 'https://freshfield.example.test', 'Shop FreshField', 'We support 8by8 because healthy neighborhoods depend on civic voice, safety, and belonging for AAPI communities.'),
+	(12, 'es', 'FreshField Markets', '/sample-partner-logos/northstar-marketplace.svg', 'Red nacional de supermercados enfocada en tiendas de barrio, productos frescos y básicos de despensa.', 'https://freshfield.example.test/es', 'Comprar en FreshField', 'Apoyamos a 8by8 porque comunidades saludables dependen de voz cívica, seguridad y pertenencia para la comunidad AAPI.'),
+	(12, 'zh-Hans', 'FreshField 生鲜市场', '/sample-partner-logos/northstar-marketplace.svg', '全国性生鲜超市网络，专注社区门店、新鲜食材与日常杂货。', 'https://freshfield.example.test/zh-hans', '前往 FreshField', '我们支持 8by8，因为健康社区离不开公民发声、安全感与 AAPI 群体的归属。'),
+
+	(13, 'en', 'AtlasFuel Charging', '/sample-partner-logos/sungrid-mobility.svg', 'An EV charging partner operating urban and highway charging locations across major US corridors.', 'https://atlasfuel.example.test', 'Open AtlasFuel', 'We support 8by8 because mobility access and language inclusion are essential to equal civic participation.'),
+	(13, 'es', 'AtlasFuel Charging', '/sample-partner-logos/sungrid-mobility.svg', 'Socio de carga para vehículos eléctricos con operación urbana y en corredores interestatales de EE. UU.', 'https://atlasfuel.example.test/es', 'Abrir AtlasFuel', 'Apoyamos a 8by8 porque el acceso a la movilidad y la inclusión lingüística son esenciales para una participación cívica equitativa.'),
+	(13, 'zh-Hans', 'AtlasFuel 充电网络', '/sample-partner-logos/sungrid-mobility.svg', '覆盖美国主要城市与高速走廊的电动车充电合作网络。', 'https://atlasfuel.example.test/zh-hans', '打开 AtlasFuel', '我们支持 8by8，因为出行可及性与语言包容是实现平等公民参与的关键。'),
+
+	(14, 'en', 'PeakMotion Fitness', '/sample-partner-logos/meridian-health-clubs.svg', 'A multi-city fitness brand with full-service clubs and app-based classes.', 'https://peakmotion.example.test', 'Join PeakMotion', 'We support 8by8 because community wellness includes dignity, representation, and standing against hate.'),
+	(14, 'es', 'PeakMotion Fitness', '/sample-partner-logos/meridian-health-clubs.svg', 'Marca de fitness en múltiples ciudades con clubes completos y clases en app.', 'https://peakmotion.example.test/es', 'Unirse a PeakMotion', 'Apoyamos a 8by8 porque el bienestar comunitario incluye dignidad, representación y oposición al odio.'),
+	(14, 'zh-Hans', 'PeakMotion 健身', '/sample-partner-logos/meridian-health-clubs.svg', '覆盖多城市的健身品牌，提供综合会所与应用课程。', 'https://peakmotion.example.test/zh-hans', '加入 PeakMotion', '我们支持 8by8，因为社区健康也包含尊严、代表性与反对仇恨。'),
+
+	(15, 'en', 'SilverScreen Theaters', '/sample-partner-logos/blue-mesa-cinemas.svg', 'A modern cinema chain with suburban and metro theater complexes.', 'https://silverscreen.example.test', 'Book SilverScreen', 'We support 8by8 because storytelling can build empathy and strengthen civic culture.'),
+	(15, 'es', 'SilverScreen Theaters', '/sample-partner-logos/blue-mesa-cinemas.svg', 'Cadena moderna de cines con complejos en suburbios y áreas metropolitanas.', 'https://silverscreen.example.test/es', 'Reservar SilverScreen', 'Apoyamos a 8by8 porque las historias pueden construir empatía y fortalecer la cultura cívica.'),
+	(15, 'zh-Hans', 'SilverScreen 影院', '/sample-partner-logos/blue-mesa-cinemas.svg', '现代影院连锁，覆盖郊区与都市综合影城。', 'https://silverscreen.example.test/zh-hans', '订票 SilverScreen', '我们支持 8by8，因为叙事能够培养同理心并强化公民文化。'),
+
+	(16, 'en', 'HomeHarbor Living', '/sample-partner-logos/pine-pixel-home.svg', 'A hybrid home-goods retailer with strong e-commerce and select showroom locations.', 'https://homeharbor.example.test', 'Visit HomeHarbor', 'We support 8by8 because everyone deserves safe homes and equal voice in shaping their communities.'),
+	(16, 'es', 'HomeHarbor Living', '/sample-partner-logos/pine-pixel-home.svg', 'Minorista híbrido de artículos para el hogar con fuerte e-commerce y algunas salas de exhibición.', 'https://homeharbor.example.test/es', 'Visitar HomeHarbor', 'Apoyamos a 8by8 porque todas las personas merecen hogares seguros y voz igual para dar forma a sus comunidades.'),
+	(16, 'zh-Hans', 'HomeHarbor 家居', '/sample-partner-logos/pine-pixel-home.svg', '家居零售混合品牌，线上业务强并设有少量展示门店。', 'https://homeharbor.example.test/zh-hans', '访问 HomeHarbor', '我们支持 8by8，因为每个人都应拥有安全家园，并平等参与社区建设。'),
+
+	(17, 'en', 'QuickMed Pharmacies', '/sample-partner-logos/harborline-grocers.svg', 'A pharmacy and wellness chain with broad suburban coverage and same-day pickup.', 'https://quickmed.example.test', 'Find QuickMed', 'We support 8by8 because trusted neighborhood services should help every resident feel safe and seen.'),
+	(17, 'es', 'QuickMed Pharmacies', '/sample-partner-logos/harborline-grocers.svg', 'Cadena de farmacias y bienestar con amplia cobertura suburbana y retiro el mismo día.', 'https://quickmed.example.test/es', 'Buscar QuickMed', 'Apoyamos a 8by8 porque los servicios de confianza del vecindario deben ayudar a que todas las personas se sientan seguras y reconocidas.'),
+	(17, 'zh-Hans', 'QuickMed 药房', '/sample-partner-logos/harborline-grocers.svg', '覆盖广泛郊区网络的药房与健康连锁，支持当日取货。', 'https://quickmed.example.test/zh-hans', '查找 QuickMed', '我们支持 8by8，因为值得信赖的社区服务应让每位居民都感到安全与被看见。'),
+
+	(18, 'en', 'MetroBite Kitchens', '/sample-partner-logos/willow-wheat-bakery.svg', 'A fast-casual restaurant network with dense city footprints and app ordering.', 'https://metrobite.example.test', 'Order MetroBite', 'We support 8by8 because inclusive communities are built through everyday participation and shared public spaces.'),
+	(18, 'es', 'MetroBite Kitchens', '/sample-partner-logos/willow-wheat-bakery.svg', 'Red de restaurantes fast-casual con presencia densa en ciudades y pedidos por app.', 'https://metrobite.example.test/es', 'Pedir MetroBite', 'Apoyamos a 8by8 porque las comunidades inclusivas se construyen con participación cotidiana y espacios públicos compartidos.'),
+	(18, 'zh-Hans', 'MetroBite 餐厨', '/sample-partner-logos/willow-wheat-bakery.svg', '快休闲餐饮网络，在城市有密集门店并支持应用点餐。', 'https://metrobite.example.test/zh-hans', '点餐 MetroBite', '我们支持 8by8，因为包容性社区来自日常参与与共享公共空间。'),
+
+	(19, 'en', 'UrbanCycle Share', '/sample-partner-logos/sungrid-mobility.svg', 'A micromobility and charging provider with stations across downtown corridors.', 'https://urbancycle.example.test', 'Open UrbanCycle', 'We support 8by8 because transportation equity directly impacts who can participate in civic life.'),
+	(19, 'es', 'UrbanCycle Share', '/sample-partner-logos/sungrid-mobility.svg', 'Proveedor de micromovilidad y carga con estaciones en corredores céntricos.', 'https://urbancycle.example.test/es', 'Abrir UrbanCycle', 'Apoyamos a 8by8 porque la equidad en transporte impacta directamente quién puede participar en la vida cívica.'),
+	(19, 'zh-Hans', 'UrbanCycle 微出行', '/sample-partner-logos/sungrid-mobility.svg', '微出行与充电服务商，在核心城区走廊部署站点。', 'https://urbancycle.example.test/zh-hans', '打开 UrbanCycle', '我们支持 8by8，因为交通公平直接影响谁能参与公民生活。'),
+
+	(20, 'en', 'Oakline Department Stores', '/sample-partner-logos/riverstone-department.svg', 'A full-line department store chain with broad regional mall presence.', 'https://oakline.example.test', 'Shop Oakline', 'We support 8by8 because civic engagement and anti-hate action strengthen communities where families shop and gather.'),
+	(20, 'es', 'Oakline Department Stores', '/sample-partner-logos/riverstone-department.svg', 'Cadena de tiendas por departamentos con amplia presencia en centros comerciales regionales.', 'https://oakline.example.test/es', 'Comprar en Oakline', 'Apoyamos a 8by8 porque la participación cívica y la acción contra el odio fortalecen las comunidades donde las familias compran y conviven.'),
+	(20, 'zh-Hans', 'Oakline 百货', '/sample-partner-logos/riverstone-department.svg', '全品类百货连锁，在区域购物中心拥有广泛布局。', 'https://oakline.example.test/zh-hans', '选购 Oakline', '我们支持 8by8，因为公民参与与反仇恨行动会强化家庭日常消费与相聚的社区。'),
+
+	(21, 'en', 'BrightBasket Grocers', '/sample-partner-logos/harborline-grocers.svg', 'A value-focused grocery chain with strong suburban and small-city coverage.', 'https://brightbasket.example.test', 'Shop BrightBasket', 'We support 8by8 because neighborhood dignity, safety, and participation should be accessible to everyone.'),
+	(21, 'es', 'BrightBasket Grocers', '/sample-partner-logos/harborline-grocers.svg', 'Cadena de supermercados enfocada en valor con fuerte cobertura suburbana y de ciudades pequeñas.', 'https://brightbasket.example.test/es', 'Comprar en BrightBasket', 'Apoyamos a 8by8 porque la dignidad vecinal, la seguridad y la participación deben ser accesibles para todas las personas.'),
+	(21, 'zh-Hans', 'BrightBasket 平价超市', '/sample-partner-logos/harborline-grocers.svg', '主打高性价比的连锁超市，覆盖郊区与中小城市。', 'https://brightbasket.example.test/zh-hans', '前往 BrightBasket', '我们支持 8by8，因为社区尊严、安全与参与机会应当人人可及。');
 
 COMMIT;
