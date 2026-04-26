@@ -14,6 +14,7 @@
     "pg-dev:stop": "npx tsx ./src/scripts/pg.ts --mode=dev stop",
     "pg-test:start": "npx tsx ./src/scripts/pg.ts --mode=test start",
     "pg-test:stop": "npx tsx ./src/scripts/pg.ts --mode=test stop",
+    "seed:db": "npx tsx ./src/scripts/seed-db.ts",
     "start": "npx tsx ./src/index.ts",
     "test:db": "npx tsx ./src/scripts/test-db.ts --no-cache"
   },

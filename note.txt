@@ -1,1 +1,0 @@
-- Add updated at trigger to reward_category
