@@ -6,6 +6,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { parse as parseContentType } from 'content-type';
+import { defaultFieldResolver } from 'graphql';
 import { typeDefs } from './graphql';
 import { setCustomTypeParsers, parseTimeZoneHeader } from './util';
 import { AppContext } from './model/graphql';
@@ -15,9 +16,27 @@ await setCustomTypeParsers();
 
 const app = express();
 const httpServer = http.createServer(app);
+
+const aliasAwareFieldResolver = (
+  source: unknown,
+  args: any,
+  context: AppContext,
+  info: any,
+) => {
+  if (source && typeof source === 'object') {
+    const responseKey = String(info.path.key);
+    if (Object.hasOwn(source, responseKey)) {
+      return (source as Record<string, unknown>)[responseKey];
+    }
+  }
+
+  return defaultFieldResolver(source as any, args, context, info);
+};
+
 const server = new ApolloServer<AppContext>({
   typeDefs,
   resolvers,
+  fieldResolver: aliasAwareFieldResolver,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
