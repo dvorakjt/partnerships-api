@@ -6,6 +6,7 @@ import { type Database } from '../../../../db';
 export const languages = (db: Database): QueryLanguagesResolver<AppContext> => {
   return async (_parent, _args, _context, info) => {
     const { fields } = gqlarr.getQueryField(info, 'languages')!;
-    return createSelectStatement(db, fields).execute();
+    const queryBuilder = db.selectFrom('public.language');
+    return createSelectStatement(queryBuilder, fields).execute();
   };
 };

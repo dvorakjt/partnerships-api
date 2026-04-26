@@ -15,8 +15,10 @@ export const locations = (db: Database): QueryLocationsResolver<AppContext> => {
       arguments: { filter, orderBy, take },
     } = gqlarr.getQueryField(info, 'locations')!;
 
+    const queryBuilder = db.selectFrom('public.active_partner_location');
+
     return applyOrderByClause(
-      createSelectStatement(db, fields, timezone).where(eb =>
+      createSelectStatement(queryBuilder, fields, timezone).where(eb =>
         createFilterExpression(eb, filter, timezone),
       ),
       orderBy,

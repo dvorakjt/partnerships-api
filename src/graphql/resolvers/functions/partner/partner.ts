@@ -10,7 +10,10 @@ export const partner = (db: Database): QueryPartnerResolver<AppContext> => {
       fields,
       arguments: { id },
     } = gqlarr.getQueryField(info, 'partner')!;
-    return createSelectStatement(db, fields, timezone)
+
+    const queryBuilder = db.selectFrom('public.active_partner');
+
+    return createSelectStatement(queryBuilder, fields, timezone)
       .where('id', '=', sql<number>`CAST(${id} AS INTEGER)`)
       .executeTakeFirst();
   };

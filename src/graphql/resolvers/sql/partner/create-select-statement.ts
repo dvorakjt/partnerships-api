@@ -1,14 +1,10 @@
-import {
-  ExpressionWrapper,
-  QueryCreator,
-  SelectQueryBuilder,
-  sql,
-} from 'kysely';
+import { ExpressionWrapper, SelectQueryBuilder, sql } from 'kysely';
 import {
   jsonArrayFrom,
   jsonBuildObject,
   jsonObjectFrom,
 } from 'kysely/helpers/postgres';
+import { pgFn } from '../../../../db';
 import { PartnerFields } from '../../../../model/graphql';
 import {
   applyOrderByClause as applyLocationsOrderByClause,
@@ -17,7 +13,9 @@ import {
   createSelectStatement as createLocationsSelectStatement,
 } from '../location';
 import {
+  availableRewardTableAlias,
   applyOrderByClause as applyRewardsOrderByClause,
+  DBWithAvailableRewardTable,
   createCountStatement as createRewardCountStatement,
   createFilterExpression as createRewardsFilterExpression,
   createSelectStatement as createRewardsSelectStatement,
@@ -26,11 +24,11 @@ import { clampedOrDefault } from '../../../../util';
 import { DB } from '../../../../model/db';
 
 export function createSelectStatement(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DB, 'public.active_partner', any>,
   fields: PartnerFields,
   timezone: string,
 ): SelectQueryBuilder<DB, 'public.active_partner', any> {
-  return qb.selectFrom('public.active_partner').select(eb => {
+  return qb.select(eb => {
     const partnerId = eb.ref('public.active_partner.id');
 
     return fields.map(field => {
@@ -41,41 +39,57 @@ export function createSelectStatement(
           return sql<string>`CAST(${eb.ref('id')} AS VARCHAR)`.as(field.alias);
         case 'locations':
           return createLocationsSelectStatementWithFilterOrderAndLimit(
-            qb,
+            eb.selectFrom('public.active_partner_location'),
             partnerId,
             field,
             timezone,
           );
         case 'locationCount':
           return createLocationCountStatementWithFilter(
-            qb,
+            eb.selectFrom('public.active_partner_location'),
             partnerId,
             field,
             timezone,
           );
         case 'rewards':
           return createRewardsSelectStatementWithFilterOrderAndLimit(
-            qb,
+            eb.selectFrom(
+              pgFn('public.get_available_rewards_in_timezone', [
+                eb.val(timezone),
+              ]).as(availableRewardTableAlias),
+            ),
             partnerId,
             field,
             timezone,
           );
         case 'rewardCount':
           return createRewardCountStatementWithFilter(
-            qb,
+            eb.selectFrom(
+              pgFn('public.get_available_rewards_in_timezone', [
+                eb.val(timezone),
+              ]).as(availableRewardTableAlias),
+            ),
             partnerId,
             field,
             timezone,
           );
         case 'translatedDetails':
-          return createTranslatedDetailsExpression(qb, partnerId, field);
+          return createTranslatedDetailsExpression(
+            eb.selectFrom('public.partner_details_translation'),
+            partnerId,
+            field,
+          );
       }
     });
   });
 }
 
 function createLocationsSelectStatementWithFilterOrderAndLimit(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<
+    DB,
+    'public.active_partner_location' | 'public.active_partner',
+    any
+  >,
   partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'locations' }>,
   timezone: string,
@@ -100,7 +114,7 @@ function createLocationsSelectStatementWithFilterOrderAndLimit(
 }
 
 function createLocationCountStatementWithFilter(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DB, 'public.active_partner_location', any>,
   partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'locationCount' }>,
   timezone: string,
@@ -116,7 +130,7 @@ function createLocationCountStatementWithFilter(
 }
 
 function createRewardsSelectStatementWithFilterOrderAndLimit(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DBWithAvailableRewardTable, 'available_reward', any>,
   partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'rewards' }>,
   timezone: string,
@@ -141,12 +155,12 @@ function createRewardsSelectStatementWithFilterOrderAndLimit(
 }
 
 function createRewardCountStatementWithFilter(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DBWithAvailableRewardTable, 'available_reward', any>,
   partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'rewardCount' }>,
   timezone: string,
 ) {
-  return createRewardCountStatement(qb, timezone)
+  return createRewardCountStatement(qb)
     .where(eb =>
       eb.and([
         eb('partner_id', '=', partnerId),
@@ -157,7 +171,7 @@ function createRewardCountStatementWithFilter(
 }
 
 function createTranslatedDetailsExpression(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DB, 'public.partner_details_translation', any>,
   partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'translatedDetails' }>,
 ) {
@@ -165,7 +179,6 @@ function createTranslatedDetailsExpression(
 
   return jsonObjectFrom(
     qb
-      .selectFrom('public.partner_details_translation')
       .select(eb => {
         return field.fields.map(field => {
           switch (field.name) {

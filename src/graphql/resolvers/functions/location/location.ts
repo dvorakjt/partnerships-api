@@ -11,7 +11,9 @@ export const location = (db: Database): QueryLocationResolver<AppContext> => {
       arguments: { id },
     } = gqlarr.getQueryField(info, 'location')!;
 
-    return createSelectStatement(db, fields, timezone)
+    const queryBuilder = db.selectFrom('public.active_partner_location');
+
+    return createSelectStatement(queryBuilder, fields, timezone)
       .where('id', '=', sql<bigint>`CAST(${id} AS BIGINT)`)
       .executeTakeFirst();
   };

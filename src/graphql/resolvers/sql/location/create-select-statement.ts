@@ -1,4 +1,4 @@
-import { QueryCreator, SelectQueryBuilder, sql } from 'kysely';
+import { SelectQueryBuilder, sql } from 'kysely';
 import { jsonBuildObject, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { pgFn } from '../../../../db';
 import { LocationFields } from '../../../../model/graphql';
@@ -6,11 +6,15 @@ import { createSelectStatement as createPartnerSelectStatement } from '../partne
 import { DB } from '../../../../model/db';
 
 export function createSelectStatement(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<
+    DB,
+    'public.active_partner_location' | 'public.active_partner',
+    any
+  >,
   fields: LocationFields,
   timezone: string,
 ): SelectQueryBuilder<DB, 'public.active_partner_location', any> {
-  return qb.selectFrom('public.active_partner_location').select(eb => {
+  return qb.select(eb => {
     return fields.map(field => {
       switch (field.name) {
         case '__typename':
@@ -50,11 +54,11 @@ export function createSelectStatement(
         case 'partner':
           const partnerId = eb.ref('public.active_partner_location.partner_id');
           return jsonObjectFrom(
-            createPartnerSelectStatement(qb, field.fields, timezone).where(
-              'public.active_partner.id',
-              '=',
-              partnerId,
-            ),
+            createPartnerSelectStatement(
+              eb.selectFrom('public.active_partner'),
+              field.fields,
+              timezone,
+            ).where('public.active_partner.id', '=', partnerId),
           ).as(field.alias);
       }
     });

@@ -14,7 +14,9 @@ export const partnerCount = (
       arguments: { filter },
     } = gqlarr.getQueryField(info, 'partnerCount')!;
 
-    const { partner_count } = await createCountStatement(db)
+    const queryBuilder = db.selectFrom('public.active_partner');
+
+    const { partner_count } = await createCountStatement(queryBuilder)
       .where(eb => createFilterExpression(eb, filter, timezone))
       .executeTakeFirstOrThrow();
 

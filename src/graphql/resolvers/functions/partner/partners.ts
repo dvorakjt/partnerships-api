@@ -15,8 +15,10 @@ export const partners = (db: Database): QueryPartnersResolver<AppContext> => {
       arguments: { filter, orderBy, take },
     } = gqlarr.getQueryField(info, 'partners')!;
 
+    const queryBuilder = db.selectFrom('public.active_partner');
+
     return applyOrderByClause(
-      createSelectStatement(db, fields, timezone).where(eb =>
+      createSelectStatement(queryBuilder, fields, timezone).where(eb =>
         createFilterExpression(eb, filter, timezone),
       ),
       orderBy,

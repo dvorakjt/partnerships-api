@@ -14,7 +14,9 @@ export const locationCount = (
       arguments: { filter },
     } = gqlarr.getQueryField(info, 'locationCount')!;
 
-    const query = createCountStatement(db).where(eb =>
+    const queryBuilder = db.selectFrom('public.active_partner_location');
+
+    const query = createCountStatement(queryBuilder).where(eb =>
       createFilterExpression(eb, filter, timezone),
     );
 

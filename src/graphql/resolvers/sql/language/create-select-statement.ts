@@ -1,12 +1,12 @@
-import { QueryCreator } from 'kysely';
+import { SelectQueryBuilder } from 'kysely';
 import { DB } from '../../../../model/db';
 import { LanguageFields } from '../../../../model/graphql';
 
 export function createSelectStatement(
-  qb: QueryCreator<DB>,
+  qb: SelectQueryBuilder<DB, 'public.language', any>,
   fields: LanguageFields,
 ) {
-  return qb.selectFrom('public.language').select(eb => {
+  return qb.select(eb => {
     return fields.map(field => {
       switch (field.name) {
         case '__typename':
