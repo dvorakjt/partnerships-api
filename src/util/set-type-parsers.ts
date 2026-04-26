@@ -15,12 +15,12 @@ export async function setCustomTypeParsers() {
   await client.connect();
 
   // Get the OID for geography types
-  const { rows } = await client.query(`
+  let result = await client.query(`
     SELECT oid FROM pg_type WHERE typname = 'geography'
   `);
 
   // Set the geography type parser to parse geographies as Point
-  for (const row of rows) {
+  for (const row of result.rows) {
     pg.types.setTypeParser(row.oid, hex => {
       const geom = wkx.Geometry.parse(Buffer.from(hex, 'hex')) as wkx.Point;
       return new Point(geom.y, geom.x);
@@ -39,4 +39,24 @@ export async function setCustomTypeParsers() {
     enumerable: false,
     configurable: true,
   });
+
+  // Set the redemption forums array type parser
+  result = await client.query(
+    `SELECT typarray FROM pg_type WHERE typname = 'redemption_forum'`,
+  );
+
+  for (const row of result.rows) {
+    pg.types.setTypeParser(row.typarray, value => {
+      if (value === null) return null;
+      if (value === '{}') return [];
+
+      // Strip the curly braces and split by comma
+      return value
+        .slice(1, -1)
+        .split(',')
+        .map(item => item.trim());
+    });
+  }
+
+  await client.end();
 }
