@@ -29,9 +29,9 @@ import { DB } from '../../../../model/db';
 export function createSelectStatement(
   fields: PartnerFields,
   timezone: string,
-): SelectQueryBuilder<DB, 'public.v_active_partner', any> {
-  return db.selectFrom('public.v_active_partner').select(eb => {
-    const partnerId = eb.ref('public.v_active_partner.id');
+): SelectQueryBuilder<DB, 'public.active_partner', any> {
+  return db.selectFrom('public.active_partner').select(eb => {
+    const partnerId = eb.ref('public.active_partner.id');
 
     return fields.map(field => {
       switch (field.name) {
@@ -71,7 +71,7 @@ export function createSelectStatement(
 }
 
 function createLocationsSelectStatementWithFilterOrderAndLimit(
-  partnerId: ExpressionWrapper<DB, 'public.v_active_partner', number>,
+  partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'locations' }>,
   timezone: string,
 ) {
@@ -95,7 +95,7 @@ function createLocationsSelectStatementWithFilterOrderAndLimit(
 }
 
 function createLocationCountStatementWithFilter(
-  partnerId: ExpressionWrapper<DB, 'public.v_active_partner', number>,
+  partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'locationCount' }>,
   timezone: string,
 ) {
@@ -110,7 +110,7 @@ function createLocationCountStatementWithFilter(
 }
 
 function createRewardsSelectStatementWithFilterOrderAndLimit(
-  partnerId: ExpressionWrapper<DB, 'public.v_active_partner', number>,
+  partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'rewards' }>,
   timezone: string,
 ) {
@@ -134,7 +134,7 @@ function createRewardsSelectStatementWithFilterOrderAndLimit(
 }
 
 function createRewardCountStatementWithFilter(
-  partnerId: ExpressionWrapper<DB, 'public.v_active_partner', number>,
+  partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'rewardCount' }>,
   timezone: string,
 ) {
@@ -149,7 +149,7 @@ function createRewardCountStatementWithFilter(
 }
 
 function createTranslatedDetailsExpression(
-  partnerId: ExpressionWrapper<DB, 'public.v_active_partner', number>,
+  partnerId: ExpressionWrapper<DB, 'public.active_partner', number>,
   field: Extract<PartnerFields[number], { name: 'translatedDetails' }>,
 ) {
   const { languageTag } = field.arguments;

@@ -7,7 +7,7 @@ import { applyOrderByClause as applyPartnerOrderByClause } from '../partner/appl
 export function applyOrderByClause(
   qb: SelectQueryBuilder<
     DBWithAvailableRewardTable,
-    'available_reward' | 'public.v_active_partner',
+    'available_reward' | 'public.active_partner',
     any
   >,
   orderByClauses: RewardOrderByCriteria[] = [],
@@ -129,9 +129,9 @@ export function applyOrderByClause(
     if (clause.partner) {
       return applyPartnerOrderByClause(
         builder.innerJoin(
-          'public.v_active_partner',
+          'public.active_partner',
           'partner_id',
-          'public.v_active_partner.id',
+          'public.active_partner.id',
         ),
         [clause.partner],
       );

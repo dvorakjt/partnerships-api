@@ -94,11 +94,11 @@ export function createFilterExpression(
 
     return eb.exists(
       eb
-        .selectFrom('public.v_active_partner')
+        .selectFrom('public.active_partner')
         .select('id')
         .where(eb =>
           eb.and([
-            eb('public.v_active_partner.id', '=', partnerId),
+            eb('public.active_partner.id', '=', partnerId),
             createPartnerFilterExpression(eb, filter!.partner, timezone),
           ]),
         ),

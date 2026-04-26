@@ -7,7 +7,7 @@ import { applyOrderByClause as applyPartnerOrderByClause } from '../partner';
 export function applyOrderByClause(
   qb: SelectQueryBuilder<
     DB,
-    'public.v_active_partner_location' | 'public.v_active_partner',
+    'public.active_partner_location' | 'public.active_partner',
     any
   >,
   orderByClauses: LocationOrderByCriteria[] = [],
@@ -16,7 +16,7 @@ export function applyOrderByClause(
     if (clause.id) {
       return builder.orderBy(
         eb =>
-          sql`${eb.ref('public.v_active_partner_location.id')}
+          sql`${eb.ref('public.active_partner_location.id')}
             ${sql.raw(clause.id?._order === SortOrder.ASC ? 'asc' : 'desc')} 
             ${sql.raw(clause.id?._nullsLast ? 'NULLS LAST' : 'NULLS FIRST')}`,
       );
@@ -24,7 +24,7 @@ export function applyOrderByClause(
     if (clause.distance) {
       return builder.orderBy(
         eb =>
-          sql`${eb.ref('public.v_active_partner_location.coordinates')} <-> ${pgFn(
+          sql`${eb.ref('public.active_partner_location.coordinates')} <-> ${pgFn(
             'public.make_geographic_point',
             [
               eb.val(clause.distance!._from.longitude),
@@ -38,9 +38,9 @@ export function applyOrderByClause(
     if (clause.partner) {
       return applyPartnerOrderByClause(
         builder.innerJoin(
-          'public.v_active_partner',
-          'public.v_active_partner_location.partner_id',
-          'public.v_active_partner.id',
+          'public.active_partner',
+          'public.active_partner_location.partner_id',
+          'public.active_partner.id',
         ),
         [clause.partner],
       );

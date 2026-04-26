@@ -8,8 +8,8 @@ import { DB } from '../../../../model/db';
 export function createSelectStatement(
   fields: LocationFields,
   timezone: string,
-): SelectQueryBuilder<DB, 'public.v_active_partner_location', any> {
-  return db.selectFrom('public.v_active_partner_location').select(eb => {
+): SelectQueryBuilder<DB, 'public.active_partner_location', any> {
+  return db.selectFrom('public.active_partner_location').select(eb => {
     return fields.map(field => {
       switch (field.name) {
         case '__typename':
@@ -47,12 +47,10 @@ export function createSelectStatement(
             eb.val(field.arguments.units),
           ]).as(field.alias);
         case 'partner':
-          const partnerId = eb.ref(
-            'public.v_active_partner_location.partner_id',
-          );
+          const partnerId = eb.ref('public.active_partner_location.partner_id');
           return jsonObjectFrom(
             createPartnerSelectStatement(field.fields, timezone).where(
-              'public.v_active_partner.id',
+              'public.active_partner.id',
               '=',
               partnerId,
             ),

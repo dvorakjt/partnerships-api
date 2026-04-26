@@ -14,7 +14,7 @@ import {
 import { createFilterExpression as createLocationFilterExpression } from '../location';
 
 export function createFilterExpression(
-  eb: ExpressionBuilder<DB, 'public.v_active_partner'>,
+  eb: ExpressionBuilder<DB, 'public.active_partner'>,
   filter: PartnerFilter | undefined,
   timezone: string,
 ): Expression<SqlBool> {
@@ -52,7 +52,7 @@ export function createFilterExpression(
         .selectFrom('public.partner_details_translation')
         .where(eb =>
           eb.and([
-            eb('partner_id', '=', eb.ref('public.v_active_partner.id')),
+            eb('partner_id', '=', eb.ref('public.active_partner.id')),
             eb('language_tag', '=', _languageTag),
             createTranslatedDetailsFilterExpression(eb, _filter, _languageTag),
           ]),
@@ -71,7 +71,7 @@ export function createFilterExpression(
         .select(eb => eb.fn.countAll().as('reward_count'))
         .where(eb => {
           return eb.and([
-            eb('partner_id', '=', eb.ref('public.v_active_partner.id')),
+            eb('partner_id', '=', eb.ref('public.active_partner.id')),
             createRewardFilterExpression(
               eb,
               filter.rewardCount?._filter,
@@ -86,11 +86,11 @@ export function createFilterExpression(
   if (filter?.locationCount) {
     return createBigIntFilterExpression(
       sql<bigint>`(${eb
-        .selectFrom('public.v_active_partner_location')
+        .selectFrom('public.active_partner_location')
         .select(eb => eb.fn.countAll().as('location_count'))
         .where(eb => {
           return eb.and([
-            eb('partner_id', '=', eb.ref('public.v_active_partner.id')),
+            eb('partner_id', '=', eb.ref('public.active_partner.id')),
             createLocationFilterExpression(
               eb,
               filter.locationCount?._filter,

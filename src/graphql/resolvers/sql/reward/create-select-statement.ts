@@ -50,7 +50,7 @@ export function createSelectStatement(
             const partnerId = eb.ref('available_reward.partner_id');
             return jsonObjectFrom(
               createPartnerSelectStatement(field.fields, timezone).where(
-                'public.v_active_partner.id',
+                'public.active_partner.id',
                 '=',
                 partnerId,
               ),

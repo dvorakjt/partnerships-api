@@ -1,117 +1,4 @@
 -- migrate:up
-CREATE VIEW v_active_partner AS 
-SELECT p.id
-FROM partner p
-INNER JOIN partner_details_translation pd
-ON p.id = pd.partner_id
-WHERE p.is_active
-GROUP BY p.id
-/*
-  Check that the partner has translated details in all
-  supported languages.
-*/
-HAVING ARRAY_AGG(
-  pd.language_tag ORDER BY pd.language_tag
-) = ARRAY(
-  SELECT l.language_tag 
-  FROM language l
-  ORDER BY l.language_tag
-);
-
-COMMENT ON VIEW v_active_partner IS 
-$$
-@introspeql-include
-
-A view that includes only partners that meet the following 
-conditions:
-
-- The partner is active
-- The partner has translated details in all supported languages
-
-Must be refreshed after insert, update, and delete operations are performed 
-on the following tables:
-
-- partner
-- partner_details_translation
-- language
-$$;
-
-CREATE VIEW v_active_partner_location AS 
-SELECT l.* FROM location l
-INNER JOIN v_active_partner p ON l.partner_id = p.id;
-
-COMMENT ON VIEW v_active_partner_location IS 
-$$
-@introspeql-include
-
-A view that includes only locations that meet the following 
-conditions:
-
-- The partner_id column of the location corresponds to an active partner
-$$;
-
-CREATE VIEW v_valid_reward AS 
-SELECT r.* FROM reward r
--- The reward's partner must be active
-INNER JOIN v_active_partner p ON r.partner_id = p.id
-INNER JOIN reward_details_translation rd ON r.id = rd.reward_id
-GROUP BY r.id
-HAVING 
-  -- The reward must have translated details in all supported languages.
-  ARRAY_AGG(
-    rd.language_tag 
-    ORDER BY rd.language_tag
-  ) = ARRAY(
-    SELECT l.language_tag 
-    FROM language l
-    ORDER BY l.language_tag
-  ) 
-  -- All of the reward's categories must have translations in all supported languages.
-  AND TRUE = ALL(
-    SELECT ARRAY_AGG(
-	  ct.language_tag 
-	  ORDER BY ct.language_tag
-	) = ARRAY(
-	  SELECT language_tag 
-	  FROM language 
-	  ORDER BY language_tag
-	)
-    FROM category c
-    LEFT JOIN category_translation ct ON ct.category_id = c.id
-    WHERE c.id IN (
-      SELECT rc.category_id
-      FROM reward_category rc
-      WHERE rc.reward_id = r.id
-    )
-    GROUP BY c.id
-  );
-  
-COMMENT ON VIEW v_valid_reward IS 
-$$
-@introspeql-include
-
-A view that includes only rewards that meet the following 
-conditions:
-
-- A record with id = reward.partner_id exists in v_active_partner
-- The reward has translated details in all supported languages
-- Each category for the reward has translations in all supported languages
-
-Must be refreshed after the following views are refreshed:
-
-- v_active_partner
-
-Must be refreshed after insert, update, and delete operations are performed 
-on the following tables:
-
-- reward
-- reward_details_translation
-- reward_category
-- category
-- category_translation
-- language
-$$;
-
 CREATE VIEW v_valid_single_use_voucher AS 
 SELECT v.*
 FROM single_use_voucher v
@@ -137,20 +24,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT cv.id 
+    SELECT cv.id
     FROM code_based_voucher_value cv
-    INNER JOIN code_based_voucher_value_details_translation cvd
-      ON cv.id = cvd.code_based_voucher_value_id
     WHERE cv.single_use_voucher_id = v.id
-    GROUP BY cv.id
-    HAVING ARRAY_AGG(
-      cvd.language_tag ORDER BY cvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT cvd.language_tag
+        FROM code_based_voucher_value_details_translation cvd
+        WHERE cvd.code_based_voucher_value_id = cv.id
+      )
     )
-  ) 
+  )
 )
 AND (
   -- Either no qr-based voucher value exists...
@@ -160,20 +49,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT qv.id 
+    SELECT qv.id
     FROM qr_code_based_voucher_value qv
-    INNER JOIN qr_code_based_voucher_value_details_translation qvd
-      ON qv.id = qvd.qr_code_based_voucher_value_id
     WHERE qv.single_use_voucher_id = v.id
-    GROUP BY qv.id
-    HAVING ARRAY_AGG(
-      qvd.language_tag ORDER BY qvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT qvd.language_tag
+        FROM qr_code_based_voucher_value_details_translation qvd
+        WHERE qvd.qr_code_based_voucher_value_id = qv.id
+      )
     )
-  ) 
+  )
 )
 AND (
   -- Either no link-based voucher value exists...
@@ -183,20 +74,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT lv.id 
+    SELECT lv.id
     FROM link_based_voucher_value lv
-    INNER JOIN link_based_voucher_value_details_translation lvd
-      ON lv.id = lvd.link_based_voucher_value_id
     WHERE lv.single_use_voucher_id = v.id
-    GROUP BY lv.id
-    HAVING ARRAY_AGG(
-      lvd.language_tag ORDER BY lvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT lvd.language_tag
+        FROM link_based_voucher_value_details_translation lvd
+        WHERE lvd.link_based_voucher_value_id = lv.id
+      )
     )
-  ) 
+  )
 );
 
 COMMENT ON VIEW v_valid_single_use_voucher IS 
@@ -236,20 +129,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT cv.id 
+    SELECT cv.id
     FROM code_based_voucher_value cv
-    INNER JOIN code_based_voucher_value_details_translation cvd
-      ON cv.id = cvd.code_based_voucher_value_id
     WHERE cv.multiple_use_voucher_id = v.id
-    GROUP BY cv.id
-    HAVING ARRAY_AGG(
-      cvd.language_tag ORDER BY cvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT cvd.language_tag
+        FROM code_based_voucher_value_details_translation cvd
+        WHERE cvd.code_based_voucher_value_id = cv.id
+      )
     )
-  ) 
+  )
 )
 AND (
   -- Either no qr-based voucher value exists...
@@ -259,20 +154,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT qv.id 
+    SELECT qv.id
     FROM qr_code_based_voucher_value qv
-    INNER JOIN qr_code_based_voucher_value_details_translation qvd
-      ON qv.id = qvd.qr_code_based_voucher_value_id
     WHERE qv.multiple_use_voucher_id = v.id
-    GROUP BY qv.id
-    HAVING ARRAY_AGG(
-      qvd.language_tag ORDER BY qvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT qvd.language_tag
+        FROM qr_code_based_voucher_value_details_translation qvd
+        WHERE qvd.qr_code_based_voucher_value_id = qv.id
+      )
     )
-  ) 
+  )
 )
 AND (
   -- Either no link-based voucher value exists...
@@ -282,20 +179,22 @@ AND (
   ) 
   -- ...or it must have translated details in all supported languages
   OR EXISTS (
-    SELECT lv.id 
+    SELECT lv.id
     FROM link_based_voucher_value lv
-    INNER JOIN link_based_voucher_value_details_translation lvd
-      ON lv.id = lvd.link_based_voucher_value_id
     WHERE lv.multiple_use_voucher_id = v.id
-    GROUP BY lv.id
-    HAVING ARRAY_AGG(
-      lvd.language_tag ORDER BY lvd.language_tag
-    ) = ARRAY(
-      SELECT l.language_tag 
-      FROM language l
-      ORDER BY l.language_tag
+    AND NOT EXISTS (
+      (
+        SELECT l.language_tag
+        FROM language l
+      )
+      EXCEPT
+      (
+        SELECT lvd.language_tag
+        FROM link_based_voucher_value_details_translation lvd
+        WHERE lvd.link_based_voucher_value_id = lv.id
+      )
     )
-  ) 
+  )
 );
 
 COMMENT ON VIEW v_valid_multiple_use_voucher IS 
@@ -313,15 +212,17 @@ $$;
 CREATE VIEW v_valid_manual_voucher_stub AS 
 SELECT s.*
 FROM manual_voucher_stub s 
-INNER JOIN manual_voucher_stub_details_translation sd 
-ON s.id = sd.manual_voucher_stub_id
-GROUP BY s.id
-HAVING ARRAY_AGG(
-  sd.language_tag ORDER BY language_tag
-) = ARRAY (
-  SELECT l.language_tag
-  FROM language l
-  ORDER BY l.language_tag
+WHERE NOT EXISTS (
+  (
+    SELECT l.language_tag
+    FROM language l
+  )
+  EXCEPT
+  (
+    SELECT sd.language_tag
+    FROM manual_voucher_stub_details_translation sd
+    WHERE sd.manual_voucher_stub_id = s.id
+  )
 );
 
 COMMENT ON VIEW v_valid_manual_voucher_stub IS 
@@ -334,13 +235,7 @@ conditions:
 - The voucher stub must have translated details in all supported languages
 $$;
 
--- some of these could be implemented with ivm
-
-
 -- migrate:down
 DROP VIEW v_valid_manual_voucher_stub;
 DROP VIEW v_valid_multiple_use_voucher;
 DROP VIEW v_valid_single_use_voucher;
-DROP VIEW v_valid_reward;
-DROP VIEW v_active_partner_location;
-DROP VIEW v_active_partner;

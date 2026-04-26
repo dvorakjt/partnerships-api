@@ -7,7 +7,7 @@ import {
 import { DB } from '../../../../model/db';
 
 export function applyOrderByClause(
-  qb: SelectQueryBuilder<DB, 'public.v_active_partner', any>,
+  qb: SelectQueryBuilder<DB, 'public.active_partner', any>,
   orderByClauses: PartnerOrderByCriteria[] = [],
 ) {
   return orderByClauses.reduce((builder, clause) => {
@@ -35,7 +35,7 @@ export function applyOrderByClause(
                 .select(field)
                 .where(eb =>
                   eb.and([
-                    eb('partner_id', '=', eb.ref('public.v_active_partner.id')),
+                    eb('partner_id', '=', eb.ref('public.active_partner.id')),
                     eb(
                       'language_tag',
                       '=',

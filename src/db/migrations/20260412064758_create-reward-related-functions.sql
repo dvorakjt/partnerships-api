@@ -10,7 +10,7 @@ BEGIN
 
   RETURN QUERY
   SELECT r.*
-  FROM v_valid_reward r
+  FROM valid_reward r
   WHERE (
     NOW() >= GREATEST(
       r.available_from_exact,
@@ -157,7 +157,7 @@ DECLARE
 BEGIN
   SELECT r.voucher_type
   INTO reward_voucher_type
-  FROM v_available_reward r
+  FROM valid_reward r
   WHERE r.id = calc_earliest_future_expiration_date.reward_id;
   
   IF reward_voucher_type = 'SINGLE_USE' THEN 
@@ -203,7 +203,7 @@ BEGIN
 	    s.redeemable_until_exact,
       (s.redeemable_until_local AT TIME ZONE validated_tz),
       NOW() + s.redeemable_for
-	  ) FROM v_available_on_demand_voucher_stub s
+	  ) FROM on_demand_voucher_stub s
 	  WHERE s.reward_id = calc_earliest_future_expiration_date.reward_id
   );
 END;

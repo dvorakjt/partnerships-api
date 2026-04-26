@@ -9,6 +9,19 @@ import {
 } from "kysely";
 
 export interface DB {
+  "public.active_partner": {
+    created_at: Generated<Date>;
+    id: GeneratedAlways<number>;
+    is_active: Generated<boolean>;
+    updated_at: Generated<Date>;
+  };
+  "public.active_partner_location": {
+    coordinates: Point;
+    created_at: Generated<Date>;
+    id: GeneratedAlways<bigint>;
+    partner_id: number;
+    updated_at: Generated<Date>;
+  };
   "public.base_entity": {
     created_at: Generated<Date>;
     updated_at: Generated<Date>;
@@ -186,33 +199,17 @@ export interface DB {
     reward_id: string;
     updated_at: Generated<Date>;
   };
-  /**
-   * A view that includes only partners that meet the following conditions:
-   *
-   * - The partner is active
-   * - The partner has translated details in all supported languages
-   *
-   * Must be refreshed after insert, update, and delete operations are
-   * performed on the following tables:
-   *
-   * - Partner
-   * - Partner_details_translation
-   * - Language
-   */
-  "public.v_active_partner": {
-    id: number;
-  };
-  /**
-   * A view that includes only locations that meet the following conditions:
-   *
-   * - The partner_id column of the location corresponds to an active partner
-   */
-  "public.v_active_partner_location": {
-    coordinates: Point;
-    created_at: Date;
-    id: bigint;
+  "public.valid_reward": {
+    available_from_exact: Date;
+    available_from_local: Date;
+    available_until_exact: Date;
+    available_until_local: Date;
+    created_at: Generated<Date>;
+    id: Generated<string>;
     partner_id: number;
-    updated_at: Date;
+    redemption_forums: string;
+    updated_at: Generated<Date>;
+    voucher_type: "MULTIPLE_USE" | "SINGLE_USE" | "ON_DEMAND" | "MANUAL";
   };
   /**
    * A view that includes only manual voucher stubs that meet the following
@@ -246,39 +243,6 @@ export interface DB {
     redeemable_until: Date;
     reward_id: string;
     updated_at: Date;
-  };
-  /**
-   * A view that includes only rewards that meet the following conditions:
-   *
-   * - A record with id = reward.partner_id exists in v_active_partner
-   * - The reward has translated details in all supported languages
-   * - Each category for the reward has translations in all supported languages
-   *
-   * Must be refreshed after the following views are refreshed:
-   *
-   * - V_active_partner
-   *
-   * Must be refreshed after insert, update, and delete operations are
-   * performed on the following tables:
-   *
-   * - Reward
-   * - Reward_details_translation
-   * - Reward_category
-   * - Category
-   * - Category_translation
-   * - Language
-   */
-  "public.v_valid_reward": {
-    available_from_exact: Date;
-    available_from_local: Date;
-    available_until_exact: Date;
-    available_until_local: Date;
-    created_at: Date;
-    id: string;
-    partner_id: number;
-    redemption_forums: string;
-    updated_at: Date;
-    voucher_type: "MULTIPLE_USE" | "SINGLE_USE" | "ON_DEMAND" | "MANUAL";
   };
   /**
    * A view that includes only single-use vouchers that meet the following

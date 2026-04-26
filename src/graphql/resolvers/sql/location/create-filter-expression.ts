@@ -6,7 +6,7 @@ import { createIdFilterExpression } from '../common';
 import { createFilterExpression as createPartnerFilterExpression } from '../partner';
 
 export function createFilterExpression(
-  eb: ExpressionBuilder<DB, 'public.v_active_partner_location'>,
+  eb: ExpressionBuilder<DB, 'public.active_partner_location'>,
   filter: LocationFilter | undefined,
   timezone: string,
 ): Expression<SqlBool> {
@@ -41,15 +41,15 @@ export function createFilterExpression(
   }
 
   if (filter?.partner) {
-    const partnerId = eb.ref('public.v_active_partner_location.partner_id');
+    const partnerId = eb.ref('public.active_partner_location.partner_id');
 
     return eb.exists(
       eb
-        .selectFrom('public.v_active_partner')
+        .selectFrom('public.active_partner')
         .select('id')
         .where(eb =>
           eb.and([
-            eb('public.v_active_partner.id', '=', partnerId),
+            eb('public.active_partner.id', '=', partnerId),
             createPartnerFilterExpression(eb, filter!.partner, timezone),
           ]),
         ),
@@ -61,7 +61,7 @@ export function createFilterExpression(
 }
 
 function createDistanceFilterExpression(
-  eb: ExpressionBuilder<DB, 'public.v_active_partner_location'>,
+  eb: ExpressionBuilder<DB, 'public.active_partner_location'>,
   filter: DistanceFilter,
 ) {
   return pgFn('public.st_dwithin', [
