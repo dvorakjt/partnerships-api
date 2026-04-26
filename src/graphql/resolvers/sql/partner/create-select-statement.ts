@@ -4,7 +4,11 @@ import {
   SelectQueryBuilder,
   sql,
 } from 'kysely';
-import { jsonBuildObject, jsonObjectFrom } from 'kysely/helpers/postgres';
+import {
+  jsonArrayFrom,
+  jsonBuildObject,
+  jsonObjectFrom,
+} from 'kysely/helpers/postgres';
 import { db, pgFn } from '../../../../db';
 import { PartnerFields } from '../../../../model/graphql';
 import {
@@ -71,23 +75,23 @@ function createLocationsSelectStatementWithFilterOrderAndLimit(
   field: Extract<PartnerFields[number], { name: 'locations' }>,
   timezone: string,
 ) {
-  return applyLocationsOrderByClause(
-    createLocationsSelectStatement(field.fields, timezone).where(eb =>
-      eb.and([
-        eb('partner_id', '=', partnerId),
-        createLocationsFilterExpression(eb, field.arguments.filter, timezone),
-      ]),
-    ),
-    field.arguments.orderBy,
-  )
-    .limit(
+  return jsonArrayFrom(
+    applyLocationsOrderByClause(
+      createLocationsSelectStatement(field.fields, timezone).where(eb =>
+        eb.and([
+          eb('partner_id', '=', partnerId),
+          createLocationsFilterExpression(eb, field.arguments.filter, timezone),
+        ]),
+      ),
+      field.arguments.orderBy,
+    ).limit(
       clampedOrDefault(field.arguments.take, {
         min: 0,
         max: 50,
         default: 50,
       }),
-    )
-    .as(field.alias);
+    ),
+  ).as(field.alias);
 }
 
 function createLocationCountStatementWithFilter(
@@ -110,23 +114,23 @@ function createRewardsSelectStatementWithFilterOrderAndLimit(
   field: Extract<PartnerFields[number], { name: 'rewards' }>,
   timezone: string,
 ) {
-  return applyRewardsOrderByClause(
-    createRewardsSelectStatement(field.fields, timezone).where(eb =>
-      eb.and([
-        eb('partner_id', '=', partnerId),
-        createRewardsFilterExpression(eb, field.arguments.filter, timezone),
-      ]),
-    ),
-    field.arguments.orderBy,
-  )
-    .limit(
+  return jsonArrayFrom(
+    applyRewardsOrderByClause(
+      createRewardsSelectStatement(field.fields, timezone).where(eb =>
+        eb.and([
+          eb('partner_id', '=', partnerId),
+          createRewardsFilterExpression(eb, field.arguments.filter, timezone),
+        ]),
+      ),
+      field.arguments.orderBy,
+    ).limit(
       clampedOrDefault(field.arguments.take, {
         min: 0,
         max: 50,
         default: 50,
       }),
-    )
-    .as(field.alias);
+    ),
+  ).as(field.alias);
 }
 
 function createRewardCountStatementWithFilter(
