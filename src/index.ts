@@ -13,7 +13,7 @@ import { defaultFieldResolver } from 'graphql';
 import { Pool } from 'pg';
 import { createResolvers, typeDefs } from './graphql';
 import { setCustomTypeParsers, parseTimeZoneHeader } from './util';
-import { AppContext } from './model/graphql';
+import { AppContext } from './graphql';
 import { createDb } from './db';
 
 await setCustomTypeParsers();
@@ -38,18 +38,6 @@ const resolvers = createResolvers(db);
 const app = express();
 const httpServer = http.createServer(app);
 const publicDir = fileURLToPath(new URL('./public', import.meta.url));
-
-app.get('/sample-partner-logos/bloom-vine-floral-design.svg', (_, res) => {
-  res.sendFile(
-    path.join(publicDir, 'sample-partner-logos', 'bloom-vine-floral-designs.svg'),
-  );
-});
-
-app.get('/sample-partner-logos/craft-forge-furniture-co.svg', (_, res) => {
-  res.sendFile(
-    path.join(publicDir, 'sample-partner-logos', 'craft-forge-furnture-co.svg'),
-  );
-});
 
 app.use(
   express.static(publicDir, {

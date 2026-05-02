@@ -4,7 +4,7 @@
 - Testing
 - Package Structure
 - Docker Container Issues
-- Securing it (api key or something required to access mutations)
+- Securing it (api key or something required to access mutations, depth/expense limits)
 - Updates to libraries:
   - Tests
   - TSDoc comments
