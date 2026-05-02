@@ -31,352 +31,109 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql VOLATILE;
 
-CREATE OR REPLACE FUNCTION seed_random_point_in_us_region(region_key TEXT)
-RETURNS GEOGRAPHY(POINT, 4326) AS $$
-DECLARE normalized_key TEXT;
-BEGIN
-  normalized_key := UPPER(TRIM(region_key));
-
-  IF normalized_key = 'PACIFIC_NORTHWEST' THEN
-    RETURN seed_random_point_in_bounds(-124.9, -116.3, 44.0, 49.1);
-  ELSIF normalized_key = 'NORTHEAST' THEN
-    RETURN seed_random_point_in_bounds(-79.8, -66.9, 40.3, 47.6);
-  ELSIF normalized_key = 'SOUTHEAST' THEN
-    RETURN seed_random_point_in_bounds(-91.7, -75.0, 25.0, 36.9);
-  ELSIF normalized_key = 'MIDWEST' THEN
-    RETURN seed_random_point_in_bounds(-104.1, -80.5, 36.9, 49.1);
-  ELSIF normalized_key = 'SOUTHWEST' THEN
-    RETURN seed_random_point_in_bounds(-124.5, -102.0, 31.0, 41.8);
-  ELSIF normalized_key = 'CALIFORNIA' THEN
-    RETURN seed_random_point_in_bounds(-124.4, -114.1, 32.5, 41.9);
-  ELSIF normalized_key = 'TEXAS_TRIANGLE' THEN
-    RETURN seed_random_point_in_bounds(-99.9, -94.0, 29.0, 33.6);
-  ELSIF normalized_key = 'FLORIDA' THEN
-    RETURN seed_random_point_in_bounds(-87.7, -80.0, 25.0, 30.9);
-  END IF;
-
-  RETURN seed_random_point_in_us();
-END;
-$$ LANGUAGE plpgsql VOLATILE;
-
--- Partner 1: Northstar Marketplace (large nationwide omni-channel)
+-- Partner 1: Bloom & Vine Floral Design (metro delivery hubs)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (1, make_geographic_point(-122.3321, 47.6062)), -- Seattle
   (1, make_geographic_point(-122.4194, 37.7749)), -- San Francisco
   (1, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
-  (1, make_geographic_point(-95.3698, 29.7604)),  -- Houston
   (1, make_geographic_point(-87.6298, 41.8781)),  -- Chicago
-  (1, make_geographic_point(-74.0060, 40.7128));  -- New York City
+  (1, make_geographic_point(-73.9352, 40.7306));  -- New York City
 
-INSERT INTO location (partner_id, coordinates)
-SELECT 1, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'SOUTHWEST',
-  'CALIFORNIA'
-]) AS region_key
-CROSS JOIN generate_series(1, 2);
-
--- Partner 2: Pine & Pixel Home (online-only)
--- Intentionally no physical locations.
-
--- Partner 3: HarborLine Grocers (Pacific Northwest regional)
+-- Partner 2: Craft & Forge Furniture Co. (showrooms)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (3, make_geographic_point(-122.6765, 45.5231)), -- Portland
-  (3, make_geographic_point(-122.4443, 47.2529)), -- Tacoma
-  (3, make_geographic_point(-117.4260, 47.6588)); -- Spokane
+  (2, make_geographic_point(-96.7970, 32.7767)),  -- Dallas
+  (2, make_geographic_point(-104.9903, 39.7392)), -- Denver
+  (2, make_geographic_point(-84.3880, 33.7490)),  -- Atlanta
+  (2, make_geographic_point(-122.3321, 47.6062)); -- Seattle
 
+-- Partner 3: Harbor View Cafe (dense coast-to-coast cafes)
+-- Dense coverage target: location within ~100 miles across contiguous US.
 INSERT INTO location (partner_id, coordinates)
-SELECT 3, seed_random_point_in_us_region('PACIFIC_NORTHWEST')
-FROM generate_series(1, 5);
+SELECT 3, make_geographic_point(lon, lat)
+FROM generate_series(-124.0, -68.0, 2.0) AS lon
+CROSS JOIN generate_series(25.0, 49.0, 2.0) AS lat;
 
--- Partner 4: TrailPeak Outdoors (major-city flagships + regional stores)
+-- Partner 4: Luna Bliss Spa (premium urban centers)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (4, make_geographic_point(-105.0000, 39.7392)), -- Denver
-  (4, make_geographic_point(-111.8910, 40.7608)), -- Salt Lake City
+  (4, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
   (4, make_geographic_point(-112.0740, 33.4484)), -- Phoenix
-  (4, make_geographic_point(-106.6504, 35.0844)); -- Albuquerque
+  (4, make_geographic_point(-95.3698, 29.7604)),  -- Houston
+  (4, make_geographic_point(-80.1918, 25.7617)),  -- Miami
+  (4, make_geographic_point(-73.9857, 40.7484));  -- New York
 
-INSERT INTO location (partner_id, coordinates)
-SELECT 4, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'PACIFIC_NORTHWEST',
-  'CALIFORNIA',
-  'SOUTHWEST'
-]) AS region_key
-CROSS JOIN generate_series(1, 2);
-
--- Partner 5: SunGrid Mobility (selected EV charging hubs)
+-- Partner 5: Luxe Glow Cosmetics (flagship + mall stores)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (5, make_geographic_point(-96.7970, 32.7767)),  -- Dallas
-  (5, make_geographic_point(-97.7431, 30.2672)),  -- Austin
-  (5, make_geographic_point(-95.3698, 29.7604));  -- Houston
+  (5, make_geographic_point(-122.4194, 37.7749)), -- San Francisco
+  (5, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
+  (5, make_geographic_point(-95.3698, 29.7604)),  -- Houston
+  (5, make_geographic_point(-87.6298, 41.8781)),  -- Chicago
+  (5, make_geographic_point(-73.9857, 40.7484));  -- New York
 
+-- Partner 6: Nova Real Estate (nationwide advisory network)
+-- Dense coverage target: location within ~100 miles across contiguous US.
 INSERT INTO location (partner_id, coordinates)
-SELECT 5, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'TEXAS_TRIANGLE',
-  'CALIFORNIA',
-  'FLORIDA'
-]) AS region_key
-CROSS JOIN generate_series(1, 2);
+SELECT 6, make_geographic_point(lon, lat)
+FROM generate_series(-123.0, -67.0, 2.0) AS lon
+CROSS JOIN generate_series(26.0, 48.0, 2.0) AS lat;
 
--- Partner 6: Willow & Wheat Bakery Co. (few neighborhood storefronts)
-INSERT INTO location (partner_id, coordinates)
-VALUES
-  (6, make_geographic_point(-87.6298, 41.8781)), -- Chicago
-  (6, make_geographic_point(-87.6877, 42.0451)); -- Evanston
-
-INSERT INTO location (partner_id, coordinates)
-SELECT 6, seed_random_point_in_us_region('MIDWEST')
-FROM generate_series(1, 1);
-
--- Partner 7: CloudCart Office Supply (online-only)
--- Intentionally no physical locations.
-
--- Partner 8: Blue Mesa Cinemas (regional, metro-centered)
+-- Partner 7: Paw Pals Pet Grooming (suburban clusters)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (8, make_geographic_point(-112.0740, 33.4484)), -- Phoenix
-  (8, make_geographic_point(-115.1398, 36.1699)), -- Las Vegas
-  (8, make_geographic_point(-106.6504, 35.0844)); -- Albuquerque
+  (7, make_geographic_point(-122.2711, 37.8044)), -- Oakland
+  (7, make_geographic_point(-96.8005, 32.7801)),  -- Dallas area
+  (7, make_geographic_point(-83.0458, 42.3314)),  -- Detroit
+  (7, make_geographic_point(-75.1652, 39.9526)),  -- Philadelphia
+  (7, make_geographic_point(-81.3792, 28.5383));  -- Orlando
 
-INSERT INTO location (partner_id, coordinates)
-SELECT 8, seed_random_point_in_us_region('SOUTHWEST')
-FROM generate_series(1, 3);
-
--- Partner 9: Meridian Health Clubs (multi-region urban footprint)
+-- Partner 8: Silverstream Media (studio offices)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (9, make_geographic_point(-73.9352, 40.7306)),  -- New York metro
-  (9, make_geographic_point(-71.0589, 42.3601)),  -- Boston
-  (9, make_geographic_point(-77.0369, 38.9072)),  -- Washington, DC
-  (9, make_geographic_point(-84.3880, 33.7490));  -- Atlanta
+  (8, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
+  (8, make_geographic_point(-122.4194, 37.7749)), -- San Francisco
+  (8, make_geographic_point(-74.0060, 40.7128));  -- New York
 
-INSERT INTO location (partner_id, coordinates)
-SELECT 9, seed_random_point_in_us_region('NORTHEAST')
-FROM generate_series(1, 2);
-
--- Partner 10: KettleForge Roastery (small café footprint + subscriptions)
+-- Partner 9: Summit Peak Outdoors (regional outdoor hubs)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (10, make_geographic_point(-122.3321, 47.6062)), -- Seattle
-  (10, make_geographic_point(-122.6765, 45.5231)); -- Portland
+  (9, make_geographic_point(-122.3321, 47.6062)), -- Seattle
+  (9, make_geographic_point(-111.8910, 40.7608)), -- Salt Lake City
+  (9, make_geographic_point(-104.9903, 39.7392)), -- Denver
+  (9, make_geographic_point(-116.2023, 43.6150)), -- Boise
+  (9, make_geographic_point(-106.6504, 35.0844)); -- Albuquerque
 
-INSERT INTO location (partner_id, coordinates)
-SELECT 10, seed_random_point_in_us_region('PACIFIC_NORTHWEST')
-FROM generate_series(1, 1);
-
--- Partner 11: Riverstone Department Stores (inactive partner, still has stores)
-INSERT INTO location (partner_id, coordinates)
-VALUES
-  (11, make_geographic_point(-74.0060, 40.7128)), -- New York City
-  (11, make_geographic_point(-80.1918, 25.7617)); -- Miami
-
-INSERT INTO location (partner_id, coordinates)
-SELECT 11, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY['MIDWEST', 'SOUTHEAST']) AS region_key;
-
--- ------------------------------------------------------------
--- Expanded US-wide density for large-footprint existing partners
--- ------------------------------------------------------------
-
--- Partner 1: nationwide department/general merchandise density
-INSERT INTO location (partner_id, coordinates)
-SELECT 1, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'SOUTHWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'FLORIDA',
-  'PACIFIC_NORTHWEST'
-]) AS region_key
-CROSS JOIN generate_series(1, 8);
-
--- Partner 3: grocery density (metro + suburban)
-INSERT INTO location (partner_id, coordinates)
-SELECT 3, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'PACIFIC_NORTHWEST',
-  'CALIFORNIA',
-  'MIDWEST',
-  'NORTHEAST'
-]) AS region_key
-CROSS JOIN generate_series(1, 7);
-
--- Partner 9: fitness clubs in major metros
-INSERT INTO location (partner_id, coordinates)
-SELECT 9, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE'
-]) AS region_key
-CROSS JOIN generate_series(1, 5);
-
--- Partner 10: coffee cafés clustered in dense corridors
-INSERT INTO location (partner_id, coordinates)
-SELECT 10, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'PACIFIC_NORTHWEST',
-  'CALIFORNIA',
-  'NORTHEAST'
-]) AS region_key
-CROSS JOIN generate_series(1, 4);
-
--- ------------------------------------------------------------
--- New partners (12-21) with realistic footprint by business type
--- ------------------------------------------------------------
-
--- Partner 12: FreshField Markets (high density grocery)
+-- Partner 10: Taste & Thyme Catering (event markets)
 INSERT INTO location (partner_id, coordinates)
 VALUES
-  (12, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
-  (12, make_geographic_point(-117.1611, 32.7157)), -- San Diego
-  (12, make_geographic_point(-96.7970, 32.7767)),  -- Dallas
+  (10, make_geographic_point(-87.6298, 41.8781)), -- Chicago
+  (10, make_geographic_point(-96.7970, 32.7767)), -- Dallas
+  (10, make_geographic_point(-84.3880, 33.7490)), -- Atlanta
+  (10, make_geographic_point(-77.0369, 38.9072)), -- Washington, DC
+  (10, make_geographic_point(-74.0060, 40.7128)); -- New York
+
+-- Partner 11: Velocity Fitness (nationwide gym footprint)
+INSERT INTO location (partner_id, coordinates)
+VALUES
+  (11, make_geographic_point(-122.3321, 47.6062)), -- Seattle
+  (11, make_geographic_point(-122.4194, 37.7749)), -- San Francisco
+  (11, make_geographic_point(-118.2437, 34.0522)), -- Los Angeles
+  (11, make_geographic_point(-96.7970, 32.7767)),  -- Dallas
+  (11, make_geographic_point(-95.3698, 29.7604)),  -- Houston
+  (11, make_geographic_point(-87.6298, 41.8781)),  -- Chicago
+  (11, make_geographic_point(-84.3880, 33.7490)),  -- Atlanta
+  (11, make_geographic_point(-80.1918, 25.7617)),  -- Miami
+  (11, make_geographic_point(-77.0369, 38.9072)),  -- Washington, DC
+  (11, make_geographic_point(-74.0060, 40.7128));  -- New York
+
+-- Partner 12: Voltix Tech (tech support centers)
+INSERT INTO location (partner_id, coordinates)
+VALUES
+  (12, make_geographic_point(-122.4194, 37.7749)), -- San Francisco
+  (12, make_geographic_point(-121.8863, 37.3382)), -- San Jose
+  (12, make_geographic_point(-97.7431, 30.2672)),  -- Austin
   (12, make_geographic_point(-95.3698, 29.7604)),  -- Houston
-  (12, make_geographic_point(-87.6298, 41.8781)),  -- Chicago
-  (12, make_geographic_point(-84.3880, 33.7490)),  -- Atlanta
-  (12, make_geographic_point(-80.1918, 25.7617)),  -- Miami
   (12, make_geographic_point(-74.0060, 40.7128));  -- New York
-
-INSERT INTO location (partner_id, coordinates)
-SELECT 12, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'SOUTHEAST',
-  'MIDWEST',
-  'NORTHEAST',
-  'FLORIDA'
-]) AS region_key
-CROSS JOIN generate_series(1, 9);
-
--- Partner 13: AtlasFuel Charging (highway + urban EV charging)
-INSERT INTO location (partner_id, coordinates)
-SELECT 13, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'CALIFORNIA',
-  'SOUTHWEST',
-  'TEXAS_TRIANGLE',
-  'MIDWEST',
-  'NORTHEAST',
-  'SOUTHEAST',
-  'FLORIDA'
-]) AS region_key
-CROSS JOIN generate_series(1, 6);
-
--- Partner 14: PeakMotion Fitness (urban/suburban metro clusters)
-INSERT INTO location (partner_id, coordinates)
-SELECT 14, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE'
-]) AS region_key
-CROSS JOIN generate_series(1, 6);
-
--- Partner 15: SilverScreen Theaters (metro cinema complexes)
-INSERT INTO location (partner_id, coordinates)
-SELECT 15, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'CALIFORNIA',
-  'SOUTHWEST',
-  'MIDWEST',
-  'NORTHEAST',
-  'SOUTHEAST'
-]) AS region_key
-CROSS JOIN generate_series(1, 5);
-
--- Partner 16: HomeHarbor Living (select showrooms)
-INSERT INTO location (partner_id, coordinates)
-SELECT 16, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'MIDWEST',
-  'NORTHEAST'
-]) AS region_key
-CROSS JOIN generate_series(1, 3);
-
--- Partner 17: QuickMed Pharmacies (very dense suburban footprint)
-INSERT INTO location (partner_id, coordinates)
-SELECT 17, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'FLORIDA',
-  'PACIFIC_NORTHWEST'
-]) AS region_key
-CROSS JOIN generate_series(1, 8);
-
--- Partner 18: MetroBite Kitchens (city-heavy restaurant distribution)
-INSERT INTO location (partner_id, coordinates)
-SELECT 18, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'SOUTHWEST'
-]) AS region_key
-CROSS JOIN generate_series(1, 7);
-
--- Partner 19: UrbanCycle Share (mobility hubs in dense corridors)
-INSERT INTO location (partner_id, coordinates)
-SELECT 19, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'CALIFORNIA',
-  'MIDWEST',
-  'TEXAS_TRIANGLE'
-]) AS region_key
-CROSS JOIN generate_series(1, 6);
-
--- Partner 20: Oakline Department Stores (broad regional mall footprint)
-INSERT INTO location (partner_id, coordinates)
-SELECT 20, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'SOUTHWEST',
-  'TEXAS_TRIANGLE',
-  'FLORIDA'
-]) AS region_key
-CROSS JOIN generate_series(1, 6);
-
--- Partner 21: BrightBasket Grocers (value grocery, high broad density)
-INSERT INTO location (partner_id, coordinates)
-SELECT 21, seed_random_point_in_us_region(region_key)
-FROM unnest(ARRAY[
-  'NORTHEAST',
-  'SOUTHEAST',
-  'MIDWEST',
-  'CALIFORNIA',
-  'TEXAS_TRIANGLE',
-  'FLORIDA',
-  'PACIFIC_NORTHWEST'
-]) AS region_key
-CROSS JOIN generate_series(1, 9);
 
 COMMIT;

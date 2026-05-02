@@ -15,7 +15,7 @@ export function applyOrderByClause(
       return builder.orderBy(
         eb =>
           sql`
-            ${eb.ref('id')} 
+            ${eb.ref('public.active_partner.id')} 
             ${sql.raw(clause.id!._order === SortOrder.ASC ? 'ASC' : 'DESC')}
             ${sql.raw(clause.id!._nullsLast ? 'NULLS LAST' : 'NULLS FIRST')}
           `,

@@ -1,9 +1,5 @@
 import { ExpressionWrapper, SelectQueryBuilder, sql } from 'kysely';
-import {
-  jsonArrayFrom,
-  jsonBuildObject,
-  jsonObjectFrom,
-} from 'kysely/helpers/postgres';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { pgFn } from '../../../../db';
 import { PartnerFields } from '../../../../model/graphql';
 import {
@@ -36,7 +32,9 @@ export function createSelectStatement(
         case '__typename':
           return eb.val('Partner').as(field.alias);
         case 'id':
-          return sql<string>`CAST(${eb.ref('id')} AS VARCHAR)`.as(field.alias);
+          return sql<string>`CAST(${eb.ref('public.active_partner.id')} AS VARCHAR)`.as(
+            field.alias,
+          );
         case 'locations':
           return createLocationsSelectStatementWithFilterOrderAndLimit(
             eb.selectFrom('public.active_partner_location'),

@@ -13,14 +13,20 @@ export function createSelectStatement(
   >,
   fields: LocationFields,
   timezone: string,
-): SelectQueryBuilder<DB, 'public.active_partner_location', any> {
+): SelectQueryBuilder<
+  DB,
+  'public.active_partner_location' | 'public.active_partner',
+  any
+> {
   return qb.select(eb => {
     return fields.map(field => {
       switch (field.name) {
         case '__typename':
           return eb.val('Location').as(field.alias);
         case 'id':
-          return sql<string>`CAST(${eb.ref('id')} AS VARCHAR)`.as(field.alias);
+          return sql<string>`CAST(${eb.ref('public.active_partner_location.id')} AS VARCHAR)`.as(
+            field.alias,
+          );
         case 'coordinates':
           return jsonBuildObject(
             Object.fromEntries(

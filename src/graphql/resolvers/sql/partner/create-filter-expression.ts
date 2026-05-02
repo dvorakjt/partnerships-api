@@ -38,7 +38,7 @@ export function createFilterExpression(
 
   if (filter?.id) {
     return createIdFilterExpression(
-      eb.ref('id'),
+      eb.ref('public.active_partner.id'),
       filter.id,
       id => sql<number>`CAST(${id} AS INTEGER)`,
     );

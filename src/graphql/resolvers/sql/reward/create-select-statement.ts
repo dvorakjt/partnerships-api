@@ -23,7 +23,7 @@ export function createSelectStatement(
         case '__typename':
           return eb.val('Reward').as(field.alias);
         case 'id':
-          return eb.ref('id').as(field.alias);
+          return eb.ref('available_reward.id').as(field.alias);
         case 'redemptionForums':
           return pgFn('pg_catalog.array_sort', [
             eb.ref('redemption_forums'),
@@ -31,12 +31,12 @@ export function createSelectStatement(
         case 'voucherOwnership':
           return createVoucherOwnershipExpression(eb, field);
         case 'hasUsageOrQuantityLimit':
-          return pgFn('public.has_usage_or_quantity_limit', [eb.ref('id')]).as(
-            field.alias,
-          );
+          return pgFn('public.has_usage_or_quantity_limit', [
+            eb.ref('available_reward.id'),
+          ]).as(field.alias);
         case 'earliestFutureExpiryDate':
           return pgFn('public.calc_earliest_future_expiration_date', [
-            eb.ref('id'),
+            eb.ref('available_reward.id'),
             eb.val(timezone),
           ]).as(field.alias);
         case 'translatedDetails':

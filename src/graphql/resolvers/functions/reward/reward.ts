@@ -22,7 +22,7 @@ export const reward = (db: Database): QueryRewardResolver<AppContext> => {
     );
 
     return createSelectStatement(queryBuilder, fields, timezone)
-      .where('id', '=', id)
+      .where('available_reward.id', '=', id)
       .executeTakeFirst();
   };
 };

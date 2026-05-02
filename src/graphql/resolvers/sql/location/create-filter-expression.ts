@@ -14,6 +14,7 @@ export function createFilterExpression(
     const conditions = filter._and.map(f =>
       createFilterExpression(eb, f, timezone),
     );
+
     return conditions.length ? eb.and(conditions) : eb.val(true);
   }
 
@@ -21,6 +22,7 @@ export function createFilterExpression(
     const conditions = filter._or.map(f =>
       createFilterExpression(eb, f, timezone),
     );
+
     return conditions.length ? eb.or(conditions) : eb.val(true);
   }
 
@@ -30,7 +32,7 @@ export function createFilterExpression(
 
   if (filter?.id) {
     return createIdFilterExpression(
-      eb.ref('id'),
+      eb.ref('public.active_partner_location.id'),
       filter.id,
       id => sql<bigint>`CAST(${id} AS BIGINT)`,
     );
@@ -46,7 +48,7 @@ export function createFilterExpression(
     return eb.exists(
       eb
         .selectFrom('public.active_partner')
-        .select('id')
+        .select('public.active_partner.id')
         .where(eb =>
           eb.and([
             eb('public.active_partner.id', '=', partnerId),

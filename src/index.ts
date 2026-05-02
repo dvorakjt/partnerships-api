@@ -6,6 +6,8 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parse as parseContentType } from 'content-type';
 import { defaultFieldResolver } from 'graphql';
 import { Pool } from 'pg';
@@ -35,6 +37,25 @@ const resolvers = createResolvers(db);
 
 const app = express();
 const httpServer = http.createServer(app);
+const publicDir = fileURLToPath(new URL('./public', import.meta.url));
+
+app.get('/sample-partner-logos/bloom-vine-floral-design.svg', (_, res) => {
+  res.sendFile(
+    path.join(publicDir, 'sample-partner-logos', 'bloom-vine-floral-designs.svg'),
+  );
+});
+
+app.get('/sample-partner-logos/craft-forge-furniture-co.svg', (_, res) => {
+  res.sendFile(
+    path.join(publicDir, 'sample-partner-logos', 'craft-forge-furnture-co.svg'),
+  );
+});
+
+app.use(
+  express.static(publicDir, {
+    fallthrough: true,
+  }),
+);
 
 const aliasAwareFieldResolver = (
   source: unknown,
@@ -63,7 +84,7 @@ await server.start();
 
 const validCharset = /^utf-(8|((16|32)(le|be)?))$/i;
 app.use(
-  '/',
+  '/graphql',
   cors<cors.CorsRequest>(),
   express.json({
     verify(req) {
@@ -90,4 +111,4 @@ app.use(
 
 await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
 
-console.log(`🚀 Server ready at http://localhost:4000/`);
+console.log(`🚀 Server ready at http://localhost:4000/graphql`);

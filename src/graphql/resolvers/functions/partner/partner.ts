@@ -14,7 +14,11 @@ export const partner = (db: Database): QueryPartnerResolver<AppContext> => {
     const queryBuilder = db.selectFrom('public.active_partner');
 
     return createSelectStatement(queryBuilder, fields, timezone)
-      .where('id', '=', sql<number>`CAST(${id} AS INTEGER)`)
+      .where(
+        'public.active_partner.id',
+        '=',
+        sql<number>`CAST(${id} AS INTEGER)`,
+      )
       .executeTakeFirst();
   };
 };

@@ -42,7 +42,7 @@ export function createFilterExpression(
   }
 
   if (filter?.id) {
-    return createIdFilterExpression(eb.ref('id'), filter.id);
+    return createIdFilterExpression(eb.ref('available_reward.id'), filter.id);
   }
 
   if (filter?.redemptionForums) {
@@ -56,7 +56,7 @@ export function createFilterExpression(
   if (filter?.earliestFutureExpiryDate) {
     return createDateTimeFilterExpression(
       pgFn('public.calc_earliest_future_expiration_date', [
-        eb.ref('id'),
+        eb.ref('available_reward.id'),
         eb.val(timezone),
       ]),
       filter.earliestFutureExpiryDate,
@@ -65,7 +65,9 @@ export function createFilterExpression(
 
   if (filter?.hasUsageOrQuantityLimit) {
     return createBooleanFilterExpression(
-      pgFn('public.has_usage_or_quantity_limit', [eb.ref('id')]),
+      pgFn('public.has_usage_or_quantity_limit', [
+        eb.ref('available_reward.id'),
+      ]),
       filter.hasUsageOrQuantityLimit,
     );
   }
@@ -74,10 +76,10 @@ export function createFilterExpression(
     return eb.exists(
       eb
         .selectFrom('public.reward_details_translation')
-        .select('id')
+        .select('public.reward_details_translation.reward_id')
         .where(eb =>
           eb.and([
-            eb('reward_id', '=', eb.ref('id')),
+            eb('reward_id', '=', eb.ref('available_reward.id')),
             eb('language_tag', '=', filter.translatedDetails!._languageTag),
             createTranslatedDetailsFilterExpression(
               eb,
@@ -95,7 +97,7 @@ export function createFilterExpression(
     return eb.exists(
       eb
         .selectFrom('public.active_partner')
-        .select('id')
+        .select('public.active_partner.id')
         .where(eb =>
           eb.and([
             eb('public.active_partner.id', '=', partnerId),

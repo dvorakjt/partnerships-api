@@ -14,7 +14,11 @@ export const location = (db: Database): QueryLocationResolver<AppContext> => {
     const queryBuilder = db.selectFrom('public.active_partner_location');
 
     return createSelectStatement(queryBuilder, fields, timezone)
-      .where('id', '=', sql<bigint>`CAST(${id} AS BIGINT)`)
+      .where(
+        'public.active_partner_location.id',
+        '=',
+        sql<bigint>`CAST(${id} AS BIGINT)`,
+      )
       .executeTakeFirst();
   };
 };
