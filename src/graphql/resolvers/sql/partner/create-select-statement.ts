@@ -1,7 +1,7 @@
 import { ExpressionWrapper, SelectQueryBuilder, sql } from 'kysely';
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { pgFn } from '../../../../db';
-import { PartnerFields } from '../../../../model/graphql';
+import { PartnerFields } from '../../../gqlarr';
 import {
   applyOrderByClause as applyLocationsOrderByClause,
   createCountStatement as createLocationCountStatement,
@@ -17,7 +17,7 @@ import {
   createSelectStatement as createRewardsSelectStatement,
 } from '../reward';
 import { clampedOrDefault } from '../../../../util';
-import { DB } from '../../../../model/db';
+import { DB } from '../../../../db/types';
 
 export function createSelectStatement(
   qb: SelectQueryBuilder<DB, 'public.active_partner', any>,

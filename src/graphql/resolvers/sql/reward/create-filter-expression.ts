@@ -1,13 +1,13 @@
 import { Expression, ExpressionBuilder, sql, SqlBool } from 'kysely';
 import { pgFn } from '../../../../db';
-import { DB } from '../../../../model/db';
+import { DB } from '../../../../db/types';
 import {
   RedemptionForumArrayFilter,
   RewardDetailsFilter,
   RewardFilter,
   VoucherOwnership,
   VoucherOwnershipFilter,
-} from '../../../../model/graphql';
+} from '../../../gqlarr';
 import { createBooleanFilterExpression } from '../common/create-boolean-filter-expression';
 import {
   createDateTimeFilterExpression,

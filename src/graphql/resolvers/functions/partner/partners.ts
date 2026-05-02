@@ -1,12 +1,12 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryPartnersResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryPartnersResolver } from '../../../gqlarr';
 import { clampedOrDefault } from '../../../../util';
 import {
   applyOrderByClause,
   createFilterExpression,
   createSelectStatement,
 } from '../../sql/partner';
-import { type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const partners = (db: Database): QueryPartnersResolver<AppContext> => {
   return (_parent, _args, { timezone }, info) => {

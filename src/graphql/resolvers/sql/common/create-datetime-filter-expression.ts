@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { DateTimeFilter } from '../../../../model/graphql';
+import type { DateTimeFilter } from '../../../gqlarr';
 
 export function createDateTimeFilterExpression(
   lhs: Expression<Date | null>,

@@ -1,6 +1,8 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import type { Pool } from 'pg';
-import { DB, pgFn } from '../model/db';
+import { DB, pgFn } from './types';
+
+export * from './types/set-type-parsers';
 
 export type Database = Kysely<DB>;
 

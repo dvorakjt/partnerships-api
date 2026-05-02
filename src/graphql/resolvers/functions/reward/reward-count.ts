@@ -1,13 +1,12 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryRewardCountResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryRewardCountResolver } from '../../../gqlarr';
 import {
   availableRewardTableAlias,
   createCountStatement,
   createFilterExpression,
 } from '../../sql/reward';
-import { type Database } from '../../../../db';
+import { pgFn, type Database } from '../../../../db';
 import { sql } from 'kysely';
-import { pgFn } from '../../../../model/db';
+import type { AppContext } from '../../../app-context';
 
 export const rewardCount = (
   db: Database,

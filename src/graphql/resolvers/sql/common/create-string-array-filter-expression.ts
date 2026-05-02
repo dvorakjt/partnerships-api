@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { StringArrayFilter } from '../../../../model/graphql';
+import type { StringArrayFilter } from '../../../gqlarr';
 import { pgFn } from '../../../../db';
 
 export function createStringArrayFilterExpression(

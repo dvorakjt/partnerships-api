@@ -1,9 +1,9 @@
 import { SelectQueryBuilder, sql } from 'kysely';
 import { jsonBuildObject, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { pgFn } from '../../../../db';
-import { LocationFields } from '../../../../model/graphql';
+import { LocationFields } from '../../../gqlarr';
 import { createSelectStatement as createPartnerSelectStatement } from '../partner';
-import { DB } from '../../../../model/db';
+import { DB } from '../../../../db/types';
 
 export function createSelectStatement(
   qb: SelectQueryBuilder<

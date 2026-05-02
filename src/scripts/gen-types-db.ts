@@ -5,7 +5,7 @@ import {
   type IntrospeqlKyselyConfig,
 } from 'introspeql-kysely';
 
-const outFile = '/model/db/generated-types.ts';
+const outFile = '/db/types/generated.ts';
 
 const config: IntrospeqlKyselyConfig = {
   dbConnectionParams: {
@@ -49,5 +49,5 @@ generateTypes();
 
 async function generateTypes() {
   await introspeqlKysely(config);
-  console.log('Type definition file created at ' + outFile);
+  console.log('Type definition file created at src/' + outFile);
 }

@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { BooleanFilter } from '../../../../model/graphql';
+import type { BooleanFilter } from '../../../gqlarr';
 
 export function createBooleanFilterExpression(
   lhs: Expression<boolean | null>,

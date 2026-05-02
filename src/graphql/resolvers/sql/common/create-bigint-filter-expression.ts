@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { BigIntFilter } from '../../../../model/graphql';
+import type { BigIntFilter } from '../../../gqlarr';
 
 export function createBigIntFilterExpression(
   lhs: Expression<bigint | null>,

@@ -1,7 +1,7 @@
 import { ExpressionBuilder, Expression, SqlBool, sql } from 'kysely';
 import { pgFn } from '../../../../db';
-import { DB } from '../../../../model/db';
-import { DistanceFilter, LocationFilter } from '../../../../model/graphql';
+import { DB } from '../../../../db/types';
+import { DistanceFilter, LocationFilter } from '../../../gqlarr';
 import { createIdFilterExpression } from '../common';
 import { createFilterExpression as createPartnerFilterExpression } from '../partner';
 

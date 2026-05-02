@@ -1,7 +1,7 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryLanguagesResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryLanguagesResolver } from '../../../gqlarr';
 import { createSelectStatement } from '../../sql/language';
-import { type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const languages = (db: Database): QueryLanguagesResolver<AppContext> => {
   return async (_parent, _args, _context, info) => {

@@ -1,8 +1,8 @@
 import { SelectQueryBuilder } from 'kysely';
 import { jsonObjectFrom } from 'kysely/helpers/postgres';
 import { pgFn } from '../../../../db';
-import { DB } from '../../../../model/db';
-import { RewardFields, VoucherOwnership } from '../../../../model/graphql';
+import { DB } from '../../../../db/types';
+import { RewardFields, VoucherOwnership } from '../../../gqlarr';
 import { ExpressionBuilder } from 'kysely';
 import { createSelectStatement as createPartnerSelectStatement } from '../partner';
 

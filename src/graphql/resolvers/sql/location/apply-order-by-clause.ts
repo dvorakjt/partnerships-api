@@ -1,7 +1,7 @@
 import { SelectQueryBuilder, sql } from 'kysely';
 import { pgFn } from '../../../../db';
-import { DB } from '../../../../model/db';
-import { LocationOrderByCriteria, SortOrder } from '../../../../model/graphql';
+import { DB } from '../../../../db/types';
+import { LocationOrderByCriteria, SortOrder } from '../../../gqlarr';
 import { applyOrderByClause as applyPartnerOrderByClause } from '../partner';
 
 export function applyOrderByClause(

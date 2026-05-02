@@ -1,8 +1,8 @@
 import { sql } from 'kysely';
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryPartnerResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryPartnerResolver } from '../../../gqlarr';
 import { createSelectStatement } from '../../sql/partner';
-import { type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const partner = (db: Database): QueryPartnerResolver<AppContext> => {
   return (_parent, _args, { timezone }, info) => {

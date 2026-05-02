@@ -1,10 +1,10 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryPartnerCountResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryPartnerCountResolver } from '../../../gqlarr';
 import {
   createCountStatement,
   createFilterExpression,
 } from '../../sql/partner';
-import { type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const partnerCount = (
   db: Database,

@@ -1,5 +1,5 @@
 import { SelectQueryBuilder } from 'kysely';
-import { DB } from '../../../../model/db';
+import { DB } from '../../../../db/types';
 
 export function createCountStatement(
   qb: SelectQueryBuilder<DB, 'public.active_partner_location', any>,

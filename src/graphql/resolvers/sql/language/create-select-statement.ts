@@ -1,6 +1,6 @@
 import { SelectQueryBuilder } from 'kysely';
-import { DB } from '../../../../model/db';
-import { LanguageFields } from '../../../../model/graphql';
+import { DB } from '../../../../db/types';
+import { LanguageFields } from '../../../gqlarr';
 
 export function createSelectStatement(
   qb: SelectQueryBuilder<DB, 'public.language', any>,

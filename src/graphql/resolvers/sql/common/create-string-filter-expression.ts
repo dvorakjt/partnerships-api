@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { StringFilter } from '../../../../model/graphql';
+import type { StringFilter } from '../../../gqlarr';
 
 export function createStringFilterExpression(
   lhs: Expression<string | null>,

@@ -1,12 +1,11 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryRewardResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryRewardResolver } from '../../../gqlarr';
 import {
   availableRewardTableAlias,
   createSelectStatement,
 } from '../../sql/reward';
-import { type Database } from '../../../../db';
+import { pgFn, type Database } from '../../../../db';
 import { sql } from 'kysely';
-import { pgFn } from '../../../../model/db';
+import type { AppContext } from '../../../app-context';
 
 export const reward = (db: Database): QueryRewardResolver<AppContext> => {
   return (_parent, _args, { timezone }, info) => {

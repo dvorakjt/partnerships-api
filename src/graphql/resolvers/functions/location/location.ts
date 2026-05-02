@@ -1,6 +1,6 @@
-import type { AppContext } from '../../../../model/graphql';
+import type { AppContext } from '../../../app-context';
 import { sql } from 'kysely';
-import { gqlarr, QueryLocationResolver } from '../../../../model/graphql';
+import { gqlarr, QueryLocationResolver } from '../../../gqlarr';
 import { createSelectStatement } from '../../sql/location';
 import { type Database } from '../../../../db';
 

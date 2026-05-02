@@ -3,8 +3,8 @@ import {
   PartnerOrderByCriteria,
   SortOptions,
   SortOrder,
-} from '../../../../model/graphql';
-import { DB } from '../../../../model/db';
+} from '../../../gqlarr';
+import { DB } from '../../../../db/types';
 
 export function applyOrderByClause(
   qb: SelectQueryBuilder<DB, 'public.active_partner', any>,

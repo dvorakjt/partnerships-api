@@ -13,7 +13,7 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: './src/graphql/**/*.graphql',
   generates: {
-    'src/model/graphql/generated-types.ts': {
+    'src/graphql/gqlarr.ts': {
       plugins: ['gqlarr'],
     },
   },

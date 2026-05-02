@@ -1,6 +1,6 @@
-import { type Database } from '../../../../db';
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryCategoriesResolver } from '../../../../model/graphql';
+import { gqlarr, QueryCategoriesResolver } from '../../../gqlarr';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const categories = (
   db: Database,

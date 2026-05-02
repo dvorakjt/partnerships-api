@@ -1,4 +1,4 @@
-import type { Resolvers } from '../../model/graphql';
+import type { Resolvers } from '../gqlarr';
 import type { Database } from '../../db';
 
 import { DateTimeResolver, BigIntResolver } from 'graphql-scalars';
@@ -6,7 +6,7 @@ import { location, locations, locationCount } from './functions/location';
 import { partner, partners, partnerCount } from './functions/partner';
 import { reward, rewards, rewardCount, categories } from './functions/reward';
 import { languages } from './functions/language';
-import { retrieveVoucher } from './voucher';
+import { retrieveVoucher } from './functions/voucher';
 import { GraphQLScalarType } from 'graphql';
 
 export function createResolvers(db: Database): Resolvers & {

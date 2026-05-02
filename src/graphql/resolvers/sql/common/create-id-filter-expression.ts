@@ -1,5 +1,5 @@
 import { type Expression, sql } from 'kysely';
-import type { IDFilter } from '../../../../model/graphql';
+import type { IDFilter } from '../../../gqlarr';
 
 function createIdFilterExpression(
   lhs: Expression<String>,

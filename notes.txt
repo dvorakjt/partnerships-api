@@ -1,2 +1,13 @@
 - Optimize query performance (ideal is < 50ms, < 100ms for medium complexity, < 200ms for max allowed complexity)
-- Fix issue with redemption forums (not returning as array)
+  - Join vs Nested Select
+- TSDoc comments
+- Testing
+- Package Structure
+- Docker Container Issues
+- Securing it (api key or something required to access mutations)
+- Updates to libraries:
+  - Tests
+  - TSDoc comments
+  - Formatting
+  - Publish w/ GH actions
+  - Table valued functions

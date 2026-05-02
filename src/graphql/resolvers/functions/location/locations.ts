@@ -1,6 +1,6 @@
-import { gqlarr, QueryLocationsResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryLocationsResolver } from '../../../gqlarr';
 import { clampedOrDefault } from '../../../../util';
-import { AppContext } from '../../../../model/graphql';
+import type { AppContext } from '../../../app-context';
 import {
   applyOrderByClause,
   createFilterExpression,

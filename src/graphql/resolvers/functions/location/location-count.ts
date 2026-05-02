@@ -1,10 +1,10 @@
-import type { AppContext } from '../../../../model/graphql';
-import { gqlarr, QueryLocationCountResolver } from '../../../../model/graphql';
+import { gqlarr, QueryLocationCountResolver } from '../../../gqlarr';
 import {
   createCountStatement,
   createFilterExpression,
 } from '../../sql/location';
-import { type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
+import type { Database } from '../../../../db';
 
 export const locationCount = (
   db: Database,

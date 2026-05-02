@@ -1,5 +1,5 @@
-import type { AppContext } from '../../../model/graphql';
-import type { MutationRetrieveVoucherResolver } from '../../../model/graphql';
+import type { AppContext } from '../../../app-context';
+import type { MutationRetrieveVoucherResolver } from '../../../gqlarr';
 
 export const retrieveVoucher: MutationRetrieveVoucherResolver<AppContext> = (
   _parent,

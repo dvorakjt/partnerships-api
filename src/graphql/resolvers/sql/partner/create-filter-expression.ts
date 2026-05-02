@@ -1,7 +1,7 @@
 import { Expression, ExpressionBuilder, sql, SqlBool } from 'kysely';
 import { pgFn } from '../../../../db';
-import { DB } from '../../../../model/db';
-import { PartnerDetailsFilter, PartnerFilter } from '../../../../model/graphql';
+import { DB } from '../../../../db/types';
+import { PartnerDetailsFilter, PartnerFilter } from '../../../gqlarr';
 import {
   createIdFilterExpression,
   createBigIntFilterExpression,

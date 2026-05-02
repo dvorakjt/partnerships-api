@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import pg, { Client } from 'pg';
 import * as wkx from 'wkx';
-import { Point } from '../model/db/point';
+import { Point } from './point';
 
 export async function setCustomTypeParsers() {
   const client = new Client({

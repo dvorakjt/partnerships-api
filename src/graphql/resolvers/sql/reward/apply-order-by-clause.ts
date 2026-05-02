@@ -1,6 +1,6 @@
 import { SelectQueryBuilder, sql } from 'kysely';
 import { pgFn } from '../../../../db';
-import { RewardOrderByCriteria, SortOrder } from '../../../../model/graphql';
+import { RewardOrderByCriteria, SortOrder } from '../../../gqlarr';
 import { DBWithAvailableRewardTable } from './create-select-statement';
 
 export function applyOrderByClause(

@@ -1,5 +1,4 @@
-import { gqlarr, type AppContext } from '../../../../model/graphql';
-import type { QueryRewardsResolver } from '../../../../model/graphql';
+import { gqlarr, type QueryRewardsResolver } from '../../../gqlarr';
 import { clampedOrDefault } from '../../../../util';
 import { sql } from 'kysely';
 import {
@@ -8,8 +7,8 @@ import {
   createFilterExpression,
   createSelectStatement,
 } from '../../sql/reward';
-import { type Database } from '../../../../db';
-import { pgFn } from '../../../../model/db';
+import { pgFn, type Database } from '../../../../db';
+import type { AppContext } from '../../../app-context';
 
 export const rewards = (db: Database): QueryRewardsResolver<AppContext> => {
   return (_parent, _args, { timezone }, info) => {
