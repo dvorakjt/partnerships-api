@@ -199,6 +199,24 @@ export interface DB {
     reward_id: string;
     updated_at: Generated<Date>;
   };
+  "public.valid_manual_voucher_stub": {
+    created_at: Generated<Date>;
+    id: GeneratedAlways<number>;
+    redeemable_for: string;
+    redeemable_until_exact: Date;
+    redeemable_until_local: Date;
+    reward_id: string;
+    updated_at: Generated<Date>;
+    vouchers_remaining: number;
+  };
+  "public.valid_multiple_use_voucher": {
+    created_at: Generated<Date>;
+    has_usage_cap: boolean;
+    id: GeneratedAlways<number>;
+    redeemable_until: Date;
+    reward_id: string;
+    updated_at: Generated<Date>;
+  };
   "public.valid_reward": {
     available_from_exact: Date;
     available_from_local: Date;
@@ -211,54 +229,12 @@ export interface DB {
     updated_at: Generated<Date>;
     voucher_type: "MULTIPLE_USE" | "SINGLE_USE" | "ON_DEMAND" | "MANUAL";
   };
-  /**
-   * A view that includes only manual voucher stubs that meet the following
-   * conditions:
-   *
-   * - The voucher stub must have translated details in all supported languages
-   */
-  "public.v_valid_manual_voucher_stub": {
-    created_at: Date;
-    id: number;
-    redeemable_for: string;
-    redeemable_until_exact: Date;
-    redeemable_until_local: Date;
-    reward_id: string;
-    updated_at: Date;
-    vouchers_remaining: number;
-  };
-  /**
-   * A view that includes only multiple-use vouchers that meet the following
-   * conditions:
-   *
-   * - The voucher must have at minimum one code-based-, qr-code-based-, or
-   *   link-based-value
-   * - All values for the voucher must have translated details in all supported
-   *   languages
-   */
-  "public.v_valid_multiple_use_voucher": {
-    created_at: Date;
-    has_usage_cap: boolean;
-    id: number;
+  "public.valid_single_use_voucher": {
+    created_at: Generated<Date>;
+    id: GeneratedAlways<bigint>;
     redeemable_until: Date;
     reward_id: string;
-    updated_at: Date;
-  };
-  /**
-   * A view that includes only single-use vouchers that meet the following
-   * conditions:
-   *
-   * - The voucher must have at minimum one code-based-, qr-code-based-, or
-   *   link-based-value
-   * - All values for the voucher must have translated details in all supported
-   *   languages
-   */
-  "public.v_valid_single_use_voucher": {
-    created_at: Date;
-    id: bigint;
-    redeemable_until: Date;
-    reward_id: string;
-    updated_at: Date;
+    updated_at: Generated<Date>;
   };
 }
 

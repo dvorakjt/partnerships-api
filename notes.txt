@@ -1,15 +1,49 @@
-- Optimize query performance (ideal is < 50ms, < 100ms for medium complexity, < 200ms for max allowed complexity)
-  - Join vs Nested Select --> nested select is honestly a bit faster
-  - Where am I lacking indexes?
-  - How can I update rewards table instead of writing too many views/functions
 - TSDoc comments
 - Testing
 - Package Structure
 - Docker Container Issues
 - Securing it (api key or something required to access mutations, depth/expense limits)
-- Updates to libraries:
-  - Tests
-  - TSDoc comments
-  - Formatting
-  - Publish w/ GH actions
-  - Table valued functions
+
+1. Clean up the code
+- 1 gen-types command? 
+- gen-diagrams command
+- See if I can get this to the point where 1 command starts the app (
+  with flags for starting the db and seeding the db
+) and one command tests it (tests db layer), unit tests and graphql layer
+- Don't like pg-container config concept/command
+- TSDoc comments
+- Linting
+
+commands:
+- gen-types
+- gen-types:db
+- gen-types:gql
+- gen-diagrams
+- gen-diagrams:db
+- gen-diagrams:gql
+- test
+- test:unit
+- test:db (should also handle starting and stopping test db container)
+- test:gql
+- test:api
+- format
+- lint
+
+
+2. Testing
+- Need unit tests for resolver functions
+- Need more db-layer tests
+- CI/CD (pre-commit hook for formatting code)
+
+
+3. Better README
+
+
+4. Rest API for adding rewards
+5. security
+6. mutations 
+7. need a service for deploying servlerless functions
+
+
+Admin dashboard needs ways to update various things, view problems, deploy and 
+undeploy on-demand generators

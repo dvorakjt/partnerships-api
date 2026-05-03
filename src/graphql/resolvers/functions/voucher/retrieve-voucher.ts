@@ -7,5 +7,6 @@ export const retrieveVoucher: MutationRetrieveVoucherResolver<AppContext> = (
   context,
   info,
 ) => {
+  // Should deduct 1 from voucher stubs that have counter
   throw new Error('Not implemented');
 };
