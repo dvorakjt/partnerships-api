@@ -20,22 +20,24 @@ BEGIN
 
     SELECT s.reward_id
     FROM valid_manual_voucher_stub s
-    WHERE (s.vouchers_remaining IS NULL OR s.vouchers_remaining > 0)
-      AND (s.redeemable_until_exact IS NULL OR NOW() < s.redeemable_until_exact)
+    WHERE 
+      (s.vouchers_remaining IS NULL OR s.vouchers_remaining > 0)
       AND (
-        s.redeemable_until_local IS NULL
-        OR NOW() < (s.redeemable_until_local AT TIME ZONE tz)
+        (s.redeemable_until_exact IS NULL AND s.redeemable_until_local IS NULL) 
+        OR
+        NOW() < LEAST(s.redeemable_until_exact, (s.redeemable_until_local AT TIME ZONE tz))
       )
 
     UNION ALL
 
     SELECT s.reward_id
-    FROM on_demand_voucher_stub s
-    WHERE (s.vouchers_remaining IS NULL OR s.vouchers_remaining > 0)
-      AND (s.redeemable_until_exact IS NULL OR NOW() < s.redeemable_until_exact)
+    FROM valid_on_demand_voucher_stub s
+    WHERE 
+      (s.vouchers_remaining IS NULL OR s.vouchers_remaining > 0)
       AND (
-        s.redeemable_until_local IS NULL
-        OR NOW() < (s.redeemable_until_local AT TIME ZONE tz)
+        (s.redeemable_until_exact IS NULL AND s.redeemable_until_local IS NULL) 
+        OR
+        NOW() < LEAST(s.redeemable_until_exact, (s.redeemable_until_local AT TIME ZONE tz))
       )
   )
   SELECT r.*
@@ -101,7 +103,7 @@ BEGIN
       )
       WHEN r.voucher_type = 'ON_DEMAND' THEN EXISTS (
         SELECT 1
-        FROM on_demand_voucher_stub s
+        FROM valid_on_demand_voucher_stub s
         WHERE s.reward_id = r.id
           AND s.vouchers_remaining IS NOT NULL
       )
@@ -178,7 +180,7 @@ BEGIN
   
   RETURN (
     SELECT MIN(expiration_at)
-    FROM on_demand_voucher_stub s
+    FROM valid_on_demand_voucher_stub s
     CROSS JOIN LATERAL (
       VALUES
         (s.redeemable_until_exact),

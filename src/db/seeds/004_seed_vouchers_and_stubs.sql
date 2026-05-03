@@ -2,6 +2,8 @@ BEGIN;
 
 -- Rerunnable reset for this stage.
 TRUNCATE TABLE
+  on_demand_voucher_stub_redemption_method_translation,
+  on_demand_voucher_stub_redemption_method,
   code_based_voucher_value_details_translation,
   qr_code_based_voucher_value_details_translation,
   link_based_voucher_value_details_translation,
@@ -42,6 +44,82 @@ SELECT
   '30 days'::INTERVAL,
   400 + (rbt.rn * 10)
 FROM rewards_by_type rbt;
+
+WITH on_demand_stub_seed AS (
+  SELECT
+    s.id,
+    ROW_NUMBER() OVER (ORDER BY s.id) AS rn
+  FROM on_demand_voucher_stub s
+)
+INSERT INTO on_demand_voucher_stub_redemption_method (
+  on_demand_voucher_stub_id,
+  redemption_method
+)
+SELECT
+  odss.id,
+  CASE odss.rn % 4
+    WHEN 1 THEN 'CODE'::redemption_method
+    WHEN 2 THEN 'QR_CODE'::redemption_method
+    WHEN 3 THEN 'LINK'::redemption_method
+    ELSE 'MANUAL'::redemption_method
+  END
+FROM on_demand_stub_seed odss;
+
+WITH on_demand_method_seed AS (
+  SELECT
+    rm.on_demand_voucher_stub_id,
+    rm.redemption_method,
+    ROW_NUMBER() OVER (ORDER BY rm.on_demand_voucher_stub_id, rm.redemption_method) AS rn
+  FROM on_demand_voucher_stub_redemption_method rm
+)
+INSERT INTO on_demand_voucher_stub_redemption_method_translation (
+  on_demand_voucher_stub_id,
+  redemption_method,
+  language_tag,
+  instructions,
+  redemption_link_text
+)
+SELECT
+  odms.on_demand_voucher_stub_id,
+  odms.redemption_method,
+  lang.language_tag,
+  CASE odms.redemption_method
+    WHEN 'CODE' THEN
+      CASE lang.language_tag
+        WHEN 'en' THEN FORMAT('Your code will be generated when you redeem this offer (seed %s).', odms.rn)
+        WHEN 'es' THEN FORMAT('Tu código se generará cuando canjees esta oferta (semilla %s).', odms.rn)
+        ELSE FORMAT('兑换此优惠时将生成兑换代码（种子 %s）。', odms.rn)
+      END
+    WHEN 'QR_CODE' THEN
+      CASE lang.language_tag
+        WHEN 'en' THEN FORMAT('A QR code will be generated for this offer at redemption time (seed %s).', odms.rn)
+        WHEN 'es' THEN FORMAT('Se generará un código QR para esta oferta al momento del canje (semilla %s).', odms.rn)
+        ELSE FORMAT('核销此优惠时将生成二维码（种子 %s）。', odms.rn)
+      END
+    WHEN 'LINK' THEN
+      CASE lang.language_tag
+        WHEN 'en' THEN FORMAT('A redemption link will be generated when you claim this offer (seed %s).', odms.rn)
+        WHEN 'es' THEN FORMAT('Se generará un enlace de canje cuando reclames esta oferta (semilla %s).', odms.rn)
+        ELSE FORMAT('领取此优惠时将生成兑换链接（种子 %s）。', odms.rn)
+      END
+    ELSE
+      CASE lang.language_tag
+        WHEN 'en' THEN FORMAT('Follow the manual redemption steps provided after claiming this offer (seed %s).', odms.rn)
+        WHEN 'es' THEN FORMAT('Sigue los pasos de canje manual que se proporcionan después de reclamar esta oferta (semilla %s).', odms.rn)
+        ELSE FORMAT('领取此优惠后，请按提供的人工兑换步骤操作（种子 %s）。', odms.rn)
+      END
+  END,
+  CASE odms.redemption_method
+    WHEN 'LINK' THEN
+      CASE lang.language_tag
+        WHEN 'en' THEN FORMAT('Open offer link %s', odms.rn)
+        WHEN 'es' THEN FORMAT('Abrir enlace de la oferta %s', odms.rn)
+        ELSE FORMAT('打开优惠链接 %s', odms.rn)
+      END
+    ELSE NULL
+  END
+FROM on_demand_method_seed odms
+CROSS JOIN (VALUES ('en'), ('es'), ('zh-Hans')) AS lang(language_tag);
 
 -- MANUAL stubs
 WITH rewards_by_type AS (
