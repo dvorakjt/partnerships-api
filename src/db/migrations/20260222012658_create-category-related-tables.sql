@@ -16,6 +16,13 @@ CREATE TABLE category_translation (
   PRIMARY KEY(category_id, language_tag)
 ) INHERITS (base_entity);
 
+/* 
+  This can, in theory, speed up searching for rewards belonging to a category
+  with a specific name.
+*/
+CREATE UNIQUE INDEX category_translation_language_tag_name_idx 
+ON category_translation(language_tag, category_name);
+
 COMMENT ON TABLE category_translation IS '@introspeql-include';
 
 CREATE TRIGGER category_translation_update_trigger

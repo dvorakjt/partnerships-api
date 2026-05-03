@@ -1,5 +1,7 @@
 - Optimize query performance (ideal is < 50ms, < 100ms for medium complexity, < 200ms for max allowed complexity)
-  - Join vs Nested Select
+  - Join vs Nested Select --> nested select is honestly a bit faster
+  - Where am I lacking indexes?
+  - How can I update rewards table instead of writing too many views/functions
 - TSDoc comments
 - Testing
 - Package Structure
