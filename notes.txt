@@ -47,3 +47,16 @@ commands:
 
 Admin dashboard needs ways to update various things, view problems, deploy and 
 undeploy on-demand generators
+
+code editor that allows you to create functions to deploy to aws, these 
+functions automatically have access to secrets (reads the secret inputs you 
+added and also knows the types of translated details you provided, might need 
+to be able to install node modules...)
+
+- might need to be able to install node modules, might need to include 
+  package.json in zip
+- what options are actually required to deploy to AWS (minimums)?
+- passing env variables to it w/o runtime
+- how will this thing authenticate to aws?
+
+- admin dashboard - Google Cloud Identity

@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import path from 'path';
 import { promisify } from 'util';
 import config from '../../pg-container.config';
 
@@ -7,11 +6,11 @@ const execAsync = promisify(exec);
 
 class PostgresContainerManager {
   private static readonly platform = 'linux/amd64';
-  private static readonly imageTag = 'partnerships-api-postgres-image';
+  private static readonly imageTag = '8by8engineeringteam/postgres-18:latest';
 
   public static async run(mode: 'dev' | 'test') {
     await this.checkDockerStatus();
-    await this.buildImage();
+    await this.pullImage();
     await this.runContainer(mode);
   }
 
@@ -30,15 +29,11 @@ class PostgresContainerManager {
     }
   }
 
-  private static async buildImage() {
-    const pathToImageDir = path.join(import.meta.dirname, '../docker');
-
+  private static async pullImage() {
     try {
-      await execAsync(
-        `docker build --platform="${this.platform}" -t ${this.imageTag} ${pathToImageDir}`,
-      );
+      await execAsync(`docker pull --platform="${this.platform}" ${this.imageTag}`);
     } catch (e) {
-      throw new Error('Failed to build image.', { cause: e });
+      throw new Error(`Failed to pull image "${this.imageTag}".`, { cause: e });
     }
   }
 
