@@ -1,0 +1,710 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Partnerships Internal API",
+    "version": "1.0.0",
+    "description": "Internal REST API for managing partners, rewards, translations, locations, and categories."
+  },
+  "servers": [
+    {
+      "url": "https://TODO_REPLACE_DEV_URL",
+      "description": "Development"
+    },
+    {
+      "url": "https://TODO_REPLACE_PROD_URL",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Coordinates": {
+        "type": "object",
+        "description": "Stored as GEOGRAPHY(POINT, 4326) in DB",
+        "properties": {
+          "latitude": { "type": "number", "format": "double" },
+          "longitude": { "type": "number", "format": "double" }
+        },
+        "required": ["latitude", "longitude"]
+      },
+      "Partner": {
+        "description": "Maps to public.partner",
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int32" },
+          "isActive": { "type": "boolean", "default": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "isActive", "createdAt", "updatedAt"]
+      },
+      "PartnerTranslation": {
+        "description": "Maps to public.partner_details_translation",
+        "type": "object",
+        "properties": {
+          "partnerId": { "type": "integer", "format": "int32" },
+          "languageTag": { "type": "string", "example": "en" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "logoUrl": { "type": "string", "format": "uri" },
+          "reasonForSupporting8by8": {
+            "type": "string",
+            "description": "DB column reason_for_supporting_8by8 — nullable in DB but enforced non-empty by the API"
+          },
+          "webAddressText": {
+            "type": "string",
+            "description": "DB column web_address_text — nullable in DB but enforced non-empty by the API"
+          },
+          "webAddressUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "DB column web_address_url — nullable in DB but enforced as a valid URL by the API"
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": [
+          "partnerId",
+          "languageTag",
+          "name",
+          "description",
+          "logoUrl",
+          "reasonForSupporting8by8",
+          "webAddressText",
+          "webAddressUrl",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PartnerLocation": {
+        "description": "Maps to public.location — id is BIGINT",
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "partnerId": { "type": "integer", "format": "int32" },
+          "coordinates": { "$ref": "#/components/schemas/Coordinates" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "partnerId", "coordinates", "createdAt", "updatedAt"]
+      },
+      "CreateLocationRequest": {
+        "type": "object",
+        "properties": {
+          "coordinates": { "$ref": "#/components/schemas/Coordinates" }
+        },
+        "required": ["coordinates"]
+      },
+      "VoucherType": {
+        "description": "Maps to DB enum public.voucher_type",
+        "type": "string",
+        "enum": ["MULTIPLE_USE", "SINGLE_USE", "ON_DEMAND", "MANUAL"]
+      },
+      "RedemptionForum": {
+        "description": "Maps to DB enum public.redemption_forum",
+        "type": "string",
+        "enum": ["ONLINE", "IN_STORE"]
+      },
+      "Reward": {
+        "description": "Maps to public.reward — id is UUID, available_from/until_local columns are stored in DB but not exposed via this API",
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "partnerId": { "type": "integer", "format": "int32" },
+          "availableFromExact": {
+            "type": "string",
+            "format": "date-time",
+            "description": "DB column available_from_exact (TIMESTAMPTZ)"
+          },
+          "availableUntilExact": {
+            "type": "string",
+            "format": "date-time",
+            "description": "DB column available_until_exact (TIMESTAMPTZ)"
+          },
+          "redemptionForums": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RedemptionForum" },
+            "minItems": 1,
+            "description": "DB column redemption_forums (redemption_forum[] with CARDINALITY > 0 and no duplicate constraints)"
+          },
+          "voucherType": { "$ref": "#/components/schemas/VoucherType" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": [
+          "id",
+          "partnerId",
+          "availableFromExact",
+          "availableUntilExact",
+          "redemptionForums",
+          "voucherType",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RewardTranslation": {
+        "description": "Maps to public.reward_details_translation — long_description is nullable in DB but enforced non-empty by the API",
+        "type": "object",
+        "properties": {
+          "rewardId": { "type": "string", "format": "uuid" },
+          "languageTag": { "type": "string", "example": "en" },
+          "shortDescription": { "type": "string" },
+          "longDescription": {
+            "type": "string",
+            "description": "DB column long_description — nullable in DB but enforced non-empty by the API"
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": [
+          "rewardId",
+          "languageTag",
+          "shortDescription",
+          "longDescription",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RewardCategory": {
+        "description": "Maps to public.reward_category — composite PK (reward_id, category_id)",
+        "type": "object",
+        "properties": {
+          "rewardId": { "type": "string", "format": "uuid" },
+          "categoryId": { "type": "integer", "format": "int32" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["rewardId", "categoryId", "createdAt", "updatedAt"]
+      },
+      "CreatePartnerRequest": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "description": "Defaults to true in DB if omitted"
+          }
+        }
+      },
+      "UpdatePartnerRequest": {
+        "type": "object",
+        "properties": {
+          "isActive": { "type": "boolean" }
+        }
+      },
+      "UpsertPartnerTranslationRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "logoUrl": { "type": "string", "format": "uri" },
+          "reasonForSupporting8by8": { "type": "string" },
+          "webAddressText": { "type": "string" },
+          "webAddressUrl": { "type": "string", "format": "uri" }
+        },
+        "required": [
+          "name",
+          "description",
+          "logoUrl",
+          "reasonForSupporting8by8",
+          "webAddressText",
+          "webAddressUrl"
+        ]
+      },
+      "CreateRewardRequest": {
+        "type": "object",
+        "properties": {
+          "redemptionForums": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RedemptionForum" },
+            "minItems": 1,
+            "description": "Must have at least one entry and no duplicates (enforced by DB constraint)"
+          },
+          "voucherType": { "$ref": "#/components/schemas/VoucherType" },
+          "availableFromExact": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Stored as TIMESTAMPTZ in DB"
+          },
+          "availableUntilExact": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Stored as TIMESTAMPTZ in DB"
+          }
+        },
+        "required": [
+          "redemptionForums",
+          "voucherType",
+          "availableFromExact",
+          "availableUntilExact"
+        ]
+      },
+      "UpdateRewardRequest": {
+        "type": "object",
+        "properties": {
+          "redemptionForums": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RedemptionForum" },
+            "minItems": 1
+          },
+          "voucherType": { "$ref": "#/components/schemas/VoucherType" },
+          "availableFromExact": { "type": "string", "format": "date-time" },
+          "availableUntilExact": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UpsertRewardTranslationRequest": {
+        "type": "object",
+        "properties": {
+          "shortDescription": { "type": "string" },
+          "longDescription": { "type": "string" }
+        },
+        "required": ["shortDescription", "longDescription"]
+      },
+      "AddCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Must reference an existing public.category row"
+          }
+        },
+        "required": ["categoryId"]
+      }
+    }
+  },
+  "paths": {
+    "/partners": {
+      "post": {
+        "summary": "Create a partner",
+        "operationId": "createPartner",
+        "tags": ["Partners"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreatePartnerRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Partner created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partners/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        }
+      ],
+      "get": {
+        "summary": "Get a partner by ID",
+        "operationId": "getPartner",
+        "tags": ["Partners"],
+        "responses": {
+          "200": {
+            "description": "Partner found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update a partner",
+        "operationId": "updatePartner",
+        "tags": ["Partners"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePartnerRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Partner updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a partner",
+        "operationId": "deletePartner",
+        "tags": ["Partners"],
+        "responses": {
+          "204": { "description": "Partner deleted" },
+          "404": { "description": "Partner not found" }
+        }
+      }
+    },
+    "/partners/{id}/translations/{lang}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        },
+        {
+          "name": "lang",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" },
+          "example": "en"
+        }
+      ],
+      "put": {
+        "summary": "Upsert a partner translation",
+        "operationId": "upsertPartnerTranslation",
+        "tags": ["Partner Translations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertPartnerTranslationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation upserted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PartnerTranslation" }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a partner translation",
+        "operationId": "deletePartnerTranslation",
+        "tags": ["Partner Translations"],
+        "responses": {
+          "204": { "description": "Translation deleted" },
+          "404": { "description": "Partner or translation not found" }
+        }
+      }
+    },
+    "/partners/{id}/locations": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        }
+      ],
+      "get": {
+        "summary": "List locations for a partner",
+        "operationId": "listPartnerLocations",
+        "tags": ["Partner Locations"],
+        "responses": {
+          "200": {
+            "description": "List of locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PartnerLocation" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a location to a partner",
+        "operationId": "createPartnerLocation",
+        "tags": ["Partner Locations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateLocationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Location created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PartnerLocation" }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      }
+    },
+    "/partners/{id}/locations/{locationId}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        },
+        {
+          "name": "locationId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int64" }
+        }
+      ],
+      "delete": {
+        "summary": "Remove a location from a partner",
+        "operationId": "deletePartnerLocation",
+        "tags": ["Partner Locations"],
+        "responses": {
+          "204": { "description": "Location deleted" },
+          "404": { "description": "Partner or location not found" }
+        }
+      }
+    },
+    "/partners/{id}/rewards": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        }
+      ],
+      "get": {
+        "summary": "List rewards for a partner",
+        "operationId": "listPartnerRewards",
+        "tags": ["Partner Rewards"],
+        "responses": {
+          "200": {
+            "description": "List of rewards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Reward" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      },
+      "post": {
+        "summary": "Create a reward for a partner",
+        "operationId": "createReward",
+        "tags": ["Partner Rewards"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateRewardRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reward created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Reward" }
+              }
+            }
+          },
+          "404": { "description": "Partner not found" }
+        }
+      }
+    },
+    "/rewards/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "summary": "Get a reward by ID",
+        "operationId": "getReward",
+        "tags": ["Rewards"],
+        "responses": {
+          "200": {
+            "description": "Reward found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Reward" }
+              }
+            }
+          },
+          "404": { "description": "Reward not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update a reward",
+        "operationId": "updateReward",
+        "tags": ["Rewards"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateRewardRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reward updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Reward" }
+              }
+            }
+          },
+          "404": { "description": "Reward not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a reward",
+        "operationId": "deleteReward",
+        "tags": ["Rewards"],
+        "responses": {
+          "204": { "description": "Reward deleted" },
+          "404": { "description": "Reward not found" }
+        }
+      }
+    },
+    "/rewards/{id}/translations/{lang}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        {
+          "name": "lang",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" },
+          "example": "en"
+        }
+      ],
+      "put": {
+        "summary": "Upsert a reward translation",
+        "operationId": "upsertRewardTranslation",
+        "tags": ["Reward Translations"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRewardTranslationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation upserted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RewardTranslation" }
+              }
+            }
+          },
+          "404": { "description": "Reward not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a reward translation",
+        "operationId": "deleteRewardTranslation",
+        "tags": ["Reward Translations"],
+        "responses": {
+          "204": { "description": "Translation deleted" },
+          "404": { "description": "Reward or translation not found" }
+        }
+      }
+    },
+    "/rewards/{id}/categories": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "summary": "Add a category to a reward",
+        "operationId": "addRewardCategory",
+        "tags": ["Reward Categories"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddCategoryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category added",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RewardCategory" }
+              }
+            }
+          },
+          "404": { "description": "Reward not found" }
+        }
+      }
+    },
+    "/rewards/{id}/categories/{catId}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        {
+          "name": "catId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "format": "int32" }
+        }
+      ],
+      "delete": {
+        "summary": "Remove a category from a reward",
+        "operationId": "removeRewardCategory",
+        "tags": ["Reward Categories"],
+        "responses": {
+          "204": { "description": "Category removed" },
+          "404": { "description": "Reward or category not found" }
+        }
+      }
+    }
+  }
+}
